@@ -7,8 +7,9 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
-public class CalculatedRoutes {
+@Getter
+@Setter
+public class CalculatedRoute {
     private String formatVersion;
-    private ReachableRange reachableRange;
+    private Region reachableRange;
 }

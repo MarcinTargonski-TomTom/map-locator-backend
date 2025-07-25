@@ -14,7 +14,7 @@ import java.util.UUID;
 @MappedSuperclass
 @Getter
 @ToString
-public class AbstractEntity {
+public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

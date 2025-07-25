@@ -3,16 +3,9 @@ package com.tomtom.locator.map.map_locator.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Null;
-
-import java.util.UUID;
 
 @Schema(description = "Point")
 public record PointDTO(
-        @Null
-        UUID id,
-        @Null
-        long version,
         @Min(value = -90, message = "Latitude must be minimum -90 degrees")
         @Max(value = 90, message = "Latitude must be maximum 90 degrees")
         @Schema(description = "Latitude coordinate for a point", minimum = "-90", maximum = "90", example = "21",

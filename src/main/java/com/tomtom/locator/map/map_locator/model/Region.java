@@ -16,9 +16,10 @@ import java.util.List;
 @Table(name = "reachable_range")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @ToString(callSuper = true)
-public class ReachableRange extends AbstractEntity {
+public class Region extends AbstractEntity {
     @OneToOne
     private Point center;
     @OneToMany
