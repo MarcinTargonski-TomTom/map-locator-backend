@@ -1,6 +1,6 @@
 package com.tomtom.locator.map.map_locator.mok;
 
-import com.tomtom.locator.map.map_locator.mok.exception.AccountNotEnabledException;
+import com.tomtom.locator.map.map_locator.mok.exception.AccountNotActivatedException;
 import com.tomtom.locator.map.map_locator.mok.exception.InvalidCredentialsException;
 import com.tomtom.locator.map.map_locator.mok.model.Account;
 import com.tomtom.locator.map.map_locator.mok.model.Credentials;
@@ -66,7 +66,7 @@ class AuthServiceImplTest {
         // Then
         assertThatThrownBy(() -> underTest.authenticate(CORRECT_CREDENTIALS))
                 .isNotNull()
-                .isExactlyInstanceOf(AccountNotEnabledException.class);
+                .isExactlyInstanceOf(AccountNotActivatedException.class);
     }
 
     @Test

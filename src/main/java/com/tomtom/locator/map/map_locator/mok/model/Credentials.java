@@ -1,6 +1,6 @@
 package com.tomtom.locator.map.map_locator.mok.model;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotBlank;
 
-public record Credentials(@NonNull String login, @NonNull String password) {
+public record Credentials(@NotBlank String login, @NotBlank String password) {
 }

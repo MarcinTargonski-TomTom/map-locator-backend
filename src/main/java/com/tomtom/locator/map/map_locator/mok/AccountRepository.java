@@ -6,9 +6,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Transactional(propagation = Propagation.MANDATORY)
-interface AccountRepository extends Repository<Account, String> {
+interface AccountRepository extends Repository<Account, UUID> {
 
     Optional<Account> findByLogin(String login);
 

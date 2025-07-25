@@ -1,10 +1,10 @@
 package com.tomtom.locator.map.map_locator.mok.exception;
 
-public class MokExceptionMessage {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-    private MokExceptionMessage() {
-    }
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MokExceptionMessage {
     public static final String INVALID_CREDENTIALS_EXCEPTION = "Invalid login or password";
     public static final String ACCOUNT_NOT_ENABLED_EXCEPTION = "Account not enabled";
     public static final String INVALID_TOKEN_EXCEPTION = "Token is invalid";

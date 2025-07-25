@@ -8,6 +8,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,10 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 class JwtHelpProvider implements JwtHelper {
 
     private final JwtProperties authTokenProps;
-
-    JwtHelpProvider(@NonNull JwtProperties authTokenProps) {
-        this.authTokenProps = authTokenProps;
-    }
 
     @Override
     public String generateAuthTokenForAnAccount(Account account) {
