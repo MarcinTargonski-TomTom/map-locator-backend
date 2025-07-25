@@ -22,11 +22,10 @@ spring:
           org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false
+  profiles:
+    include:
+      - tomtomApi
 app:
   datasource:
     url:
       jdbc:postgresql://127.0.0.1:5432/map_locator
-
-tomtom:
-  api:
-    key: Free-Api-Key

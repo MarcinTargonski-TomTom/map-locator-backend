@@ -9,8 +9,10 @@ import org.springframework.web.client.RestClient;
 @Service
 public class TomTomApiClient implements MapService {
 
-    private static final String API_VERSION = "1";
-    private final RestClient restClient = RestClient.builder().baseUrl("https://api.tomtom.com").build();
+    @Value("${tomtom.api.base-url}")
+    private String baseUrl;
+    private final RestClient restClient = RestClient.builder().baseUrl(baseUrl).build();
+
     @Value("${tomtom.api.key}")
     private String key;
 
@@ -18,7 +20,7 @@ public class TomTomApiClient implements MapService {
     public CalculatedRoute getRegionForPoint(PointOfInterest poi) {
         return restClient.get().uri(
                         uriBuilder -> uriBuilder
-                                .path(String.format("/routing/%s/calculateReachableRange/%s,%s/json", API_VERSION, poi.getCenter().getLatitude(), poi.getCenter().getLongitude()))
+                                .path(String.format("/routing/1/calculateReachableRange/%s,%s/json", poi.getCenter().getLatitude(), poi.getCenter().getLongitude()))
                                 .queryParam(poi.getBudgetType().getQueryParamName(), poi.getValue())
                                 .queryParam("avoid", "unpavedRoads")
                                 .queryParam("avoid", "ferries")

@@ -17,7 +17,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/location/v1")
+@RequestMapping("/locations/v1")
 @AllArgsConstructor
 public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
