@@ -1,0 +1,6 @@
+app:
+  mok:
+    security:
+      authToken:
+        key: "r7sHH+ErDOdwvIWmE6OxD/PRXcJmicWSRnX1seiFV61wuV62CSR/L/HYPlED8GlC6e559dQv7a/jUmD6oC/FbwhmHeqqX9IvFv0WsWygpKA="
+        timeout-in-minutes: 15
