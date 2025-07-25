@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17.4-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: map_locator
+    container_name: map_locator
+    ports:
+      - "5432:5432"

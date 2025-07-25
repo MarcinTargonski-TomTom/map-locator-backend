@@ -1,3 +1,25 @@
 spring:
   application:
     name: map-locator
+  datasource:
+    driver:
+      class-name: org.postgresql.Driver
+    url: ${app.datasource.url}
+    username: admin
+    password: admin
+    name: adminDS
+    hikari:
+      auto-commit: true
+      transaction:
+        isolation: TRANSACTION_READ_COMMITTED
+  jpa:
+    properties:
+      hibernate:
+        dialect:
+          org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+app:
+  datasource:
+    url:
+      jdbc:postgresql://127.0.0.1:5432/map_locator
