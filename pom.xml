@@ -22,6 +22,10 @@
 			<name>Mateusz Giełczyński</name>
 			<email>mateusz.gielczynski@tomtom.com</email>
 		</developer>
+		<developer>
+			<name>Marcin Targoński</name>
+			<email>marcin.targonski@tomtom.com</email>
+		</developer>
 
 	</developers>
 	<scm>
