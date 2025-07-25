@@ -23,6 +23,11 @@
 			<email>mateusz.gielczynski@tomtom.com</email>
 		</developer>
 
+		<developer>
+			<name>Bartłomiej Dygasiński</name>
+			<email>bartlomiej.dygasinski@tomtom.com</email>
+		</developer>
+
 	</developers>
 	<scm>
 		<connection/>
