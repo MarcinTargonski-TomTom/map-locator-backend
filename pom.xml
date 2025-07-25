@@ -18,7 +18,11 @@
 		<license/>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<name>Mateusz Giełczyński</name>
+			<email>mateusz.gielczynski@tomtom.com</email>
+		</developer>
+
 	</developers>
 	<scm>
 		<connection/>
