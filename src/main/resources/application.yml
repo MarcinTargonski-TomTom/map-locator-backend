@@ -13,6 +13,9 @@ spring:
       transaction:
         isolation: TRANSACTION_READ_COMMITTED
   jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
     properties:
       hibernate:
         dialect:
