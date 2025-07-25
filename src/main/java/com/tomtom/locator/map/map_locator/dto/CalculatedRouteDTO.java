@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
 
-@Schema(name = "Calculated Route")
+@Schema(description = "Calculated Route")
 public record CalculatedRouteDTO(
         @Null
         UUID id,
@@ -17,10 +17,10 @@ public record CalculatedRouteDTO(
         @NotNull
         @NotBlank
         @Pattern(regexp = "^\\d{1,3}\\.\\d{1,3}.\\d{1,3}$", message = "Version must meet the pattern.")
-        @Schema(name = "Version of the format", example = "0.0.1", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "Version of the format", example = "0.0.1", requiredMode = Schema.RequiredMode.REQUIRED)
         String formatVersion,
         @NotNull
-        @Schema(name = "Region of a reachable range", example = "0.0.1", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "Region of a reachable range", example = "0.0.1", requiredMode = Schema.RequiredMode.REQUIRED)
         RegionDTO reachableRange
 ) {
 }
