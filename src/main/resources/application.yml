@@ -22,6 +22,9 @@ spring:
           org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false
+  profiles:
+    include:
+      - tomtomApi
 app:
   datasource:
     url:
