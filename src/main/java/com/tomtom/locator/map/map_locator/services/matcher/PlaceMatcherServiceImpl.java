@@ -13,11 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
-    private MapService mapService;
+    private final MapService mapService;
 
     @Override
     public Region findRegionForPlaces(List<PointOfInterest> pois) {
-        List<CalculatedRoute> calculatedRoutes = pois.stream().map(poi -> mapService.getRegionForPoint(poi)).toList();
+        List<CalculatedRoute> calculatedRoutes = pois.stream().map(mapService::getRegionForPoint).toList();
 
         return getOverlapingRegion(calculatedRoutes);
     }

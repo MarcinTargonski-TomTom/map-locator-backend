@@ -28,7 +28,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
     @Override
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public RegionDTO matchLocations(@RequestBody List<PointOfInterestDTO> pois) {
-        return regionMapper.toDTO(placeMatcherService.findRegionForPlaces(pois.stream().map(pointOfInterestMapper::toModel).toList()));
+        return regionMapper.toDTO(placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois)));
     }
 
 }

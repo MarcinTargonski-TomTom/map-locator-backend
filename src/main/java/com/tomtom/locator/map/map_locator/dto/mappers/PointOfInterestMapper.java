@@ -4,11 +4,18 @@ import com.tomtom.locator.map.map_locator.dto.PointOfInterestDTO;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = PointMapper.class)
+import java.util.List;
+
+@Mapper(componentModel = "spring", uses = {PointMapper.class})
 public interface PointOfInterestMapper {
 
 
     PointOfInterest toModel(PointOfInterestDTO pointOfInterestDTO);
 
     PointOfInterestDTO toDto(PointOfInterest pointOfInterest);
+
+    List<PointOfInterestDTO> toDto(List<PointOfInterest> pointsOfInterest);
+
+    List<PointOfInterest> toModel(List<PointOfInterestDTO> pointsOfInterest);
+
 }
