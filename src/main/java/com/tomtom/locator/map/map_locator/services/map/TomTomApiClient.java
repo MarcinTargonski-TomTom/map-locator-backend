@@ -11,14 +11,13 @@ public class TomTomApiClient implements MapService {
 
     @Value("${tomtom.api.base-url}")
     private String baseUrl;
-    private final RestClient restClient = RestClient.builder().baseUrl(baseUrl).build();
 
     @Value("${tomtom.api.key}")
     private String key;
 
     @Override
     public CalculatedRoute getRegionForPoint(PointOfInterest poi) {
-        return restClient.get().uri(
+        return RestClient.builder().baseUrl(baseUrl).build().get().uri(
                         uriBuilder -> uriBuilder
                                 .path(String.format("/routing/1/calculateReachableRange/%s,%s/json", poi.getCenter().getLatitude(), poi.getCenter().getLongitude()))
                                 .queryParam(poi.getBudgetType().getQueryParamName(), poi.getValue())
