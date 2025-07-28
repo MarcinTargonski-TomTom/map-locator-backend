@@ -8,6 +8,8 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
@@ -18,4 +20,6 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Run test with Maven
-        run: mvn verify --file pom.xml
+        run: |
+          ./mvnw verify \
+          -Dapp.mok.security.authToken.key="${JWT_SECRET}"
