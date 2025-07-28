@@ -13,7 +13,7 @@ import lombok.ToString;
 import java.util.List;
 
 @Entity
-@Table(name = "reachable_range")
+@Table(name = "regions")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
