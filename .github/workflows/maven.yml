@@ -18,4 +18,4 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Run test with Maven
-        run: mvn test --file pom.xml
+        run: mvn verify --file pom.xml
