@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.mok;
 
+import com.tomtom.locator.map.map_locator.loggers.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.mok.dto.NewAccountDto;
 import com.tomtom.locator.map.map_locator.mok.model.Account;
 import com.tomtom.locator.map.map_locator.mok.model.Credentials;
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
+@MethodCallLogged
 class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
