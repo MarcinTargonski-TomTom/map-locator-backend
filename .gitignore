@@ -201,3 +201,5 @@ README.html
 .idea
 .exercism
 application.properties
+application.yml
+
