@@ -13,13 +13,25 @@ spring:
       transaction:
         isolation: TRANSACTION_READ_COMMITTED
   jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
     properties:
       hibernate:
         dialect:
           org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false
+  profiles:
+    include:
+      - tomtomApi
 app:
   datasource:
     url:
       jdbc:postgresql://127.0.0.1:5432/map_locator
+
+  mok:
+    security:
+      authToken:
+        timeout-in-minutes: 15
+        key: your-very-secret-key

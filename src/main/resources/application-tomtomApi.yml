@@ -1,0 +1,4 @@
+tomtom:
+  api:
+    key: Free-Api-Key
+    base-url: https://api.tomtom.com

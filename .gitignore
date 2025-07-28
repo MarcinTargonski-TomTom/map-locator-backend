@@ -200,4 +200,5 @@ README.html
 *.iml
 .idea
 .exercism
-./application.properties
+application.properties
+application.yml
