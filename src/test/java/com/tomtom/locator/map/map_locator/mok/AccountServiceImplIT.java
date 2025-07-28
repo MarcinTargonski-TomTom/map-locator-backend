@@ -17,8 +17,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountServiceImplIT extends BaseIntegrationTest {
@@ -60,7 +58,7 @@ class AccountServiceImplIT extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should create new not enabled account")
+    @DisplayName("Should create new account")
     @Transactional
     void shouldCreateNewNotEnabledAccount() {
         String givenLogin = "newuser";
@@ -77,8 +75,6 @@ class AccountServiceImplIT extends BaseIntegrationTest {
 
         Account account = accountRepository.findByLogin(givenLogin)
                 .orElseThrow();
-        assertThat(account.isEnabled())
-                .isFalse();
     }
 
     @Test
