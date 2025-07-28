@@ -1,17 +1,12 @@
 package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
-import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
+import com.tomtom.locator.map.map_locator.model.*;
 import com.tomtom.locator.map.map_locator.model.Point;
-import com.tomtom.locator.map.map_locator.model.PointOfInterest;
-import com.tomtom.locator.map.map_locator.model.Region;
+import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,12 +19,18 @@ import java.util.List;
 public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
     private final MapService mapService;
+    private final LocationMatchRepository locationMatchRepository;
 
     @Override
-    public Region findRegionForPlaces(List<PointOfInterest> pois) {
+    public LocationMatch findRegionForPlaces(List<PointOfInterest> pois) {
         List<CalculatedRoute> calculatedRoutes = pois.stream().map(mapService::getRegionForPoint).toList();
+        Region overlapingRegion = getOverlapingRegion(calculatedRoutes);
 
-        return getOverlapingRegion(calculatedRoutes);
+        List<Region> requestRegions = calculatedRoutes.stream()
+                .map(CalculatedRoute::getReachableRange)
+                .toList();
+
+        return new LocationMatch(requestRegions, overlapingRegion);
     }
 
     private Region getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
