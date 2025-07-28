@@ -13,6 +13,8 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -29,24 +31,33 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
     }
 
     private Region getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
-        Geometry actualPolygon = convertRegionToJTSPolygon(calculatedRoutes.getFirst().getReachableRange());
-        for (var calculatedRoute : calculatedRoutes) {
-            Polygon polygon = convertRegionToJTSPolygon(calculatedRoute.getReachableRange());
-            actualPolygon = polygon.union(actualPolygon);
+        if (calculatedRoutes == null || calculatedRoutes.isEmpty()) {
+            throw new IllegalArgumentException("Lista tras jest pusta!");
         }
+
+        Geometry actualPolygon = convertRegionToJTSPolygon(calculatedRoutes.getFirst().getReachableRange());
+
+        for (int i = 1; i < calculatedRoutes.size(); i++) {
+            Polygon polygon = convertRegionToJTSPolygon(calculatedRoutes.get(i).getReachableRange());
+            actualPolygon = actualPolygon.intersection(polygon);
+        }
+
         return convertPolygonToRegion((Polygon) actualPolygon);
     }
+
 
 
     private Polygon convertRegionToJTSPolygon(Region region) {
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        Coordinate[] coordinates = region.getBoundary().stream()
-                .map(point -> new Coordinate(point.getLongitude(), point.getLatitude()))
-                .toArray(Coordinate[]::new);
+        List<Coordinate> uniqueCoordinates = region.getBoundary().stream()
+                .map(point -> new Coordinate(point.getLatitude(), point.getLongitude()))
+                .distinct()
+                .toList();
+        Coordinate[] coordinates = uniqueCoordinates.toArray(new Coordinate[0]);
 
         if (!coordinates[0].equals(coordinates[coordinates.length - 1])) {
-            coordinates = java.util.Arrays.copyOf(coordinates, coordinates.length + 1);
+            coordinates = Arrays.copyOf(coordinates, coordinates.length + 1);
             coordinates[coordinates.length - 1] = coordinates[0];
         }
 
@@ -54,12 +65,16 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         return geometryFactory.createPolygon(shell, null);
     }
 
+
     private Region convertPolygonToRegion(Polygon polygon) {
-        Region region = new Region(null, List.of());
+        Region region = new Region(null, new ArrayList<>());
         Coordinate[] coordinates = polygon.getCoordinates();
-        for (var coordinate : coordinates) {
-            region.getBoundary().add(new Point(coordinate.x, coordinate.y));
-        }
+
+        Arrays.stream(coordinates).forEach(coordinate ->
+                region.getBoundary().add(new Point(coordinate.x, coordinate.y))
+        );
+
         return region;
     }
+
 }
