@@ -5,9 +5,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 public abstract class BaseIntegrationTest {
 
 
@@ -15,7 +13,6 @@ public abstract class BaseIntegrationTest {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.4")
             .withDatabaseName("map_locator")
             .withUsername("admin")
-
             .withPassword("admin")
             .withReuse(true);
 
