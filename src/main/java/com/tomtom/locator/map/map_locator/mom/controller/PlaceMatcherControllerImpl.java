@@ -1,7 +1,7 @@
 package com.tomtom.locator.map.map_locator.mom.controller;
 
 
-import com.tomtom.locator.map.map_locator.model.LocationMatch;
+import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.RegionDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.mappers.PointOfInterestMapper;
@@ -20,6 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/locations/v1")
 @AllArgsConstructor
+@MethodCallLogged
 public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     private final PlaceMatcherService placeMatcherService;
@@ -28,9 +29,8 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public RegionDTO matchLocations(@RequestBody List<PointOfInterestDTO> pois) {
-        LocationMatch regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
-        return regionMapper.toDTO(regionForPlaces.getResponseRegion());
+    public List<RegionDTO> matchLocations(@RequestBody List<PointOfInterestDTO> pois) {
+        return regionMapper.toDTO(placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois)));
     }
 
 }

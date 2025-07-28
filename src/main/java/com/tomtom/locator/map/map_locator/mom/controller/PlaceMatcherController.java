@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PlaceMatcherController {
 
-    RegionDTO matchLocations(List<PointOfInterestDTO> points);
+    List<RegionDTO> matchLocations(List<PointOfInterestDTO> points);
 }

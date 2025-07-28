@@ -33,7 +33,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         return new LocationMatch(requestRegions, overlapingRegion);
     }
 
-    private Region getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
+    private List<Region> getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
         if (calculatedRoutes == null || calculatedRoutes.isEmpty()) {
             throw new IllegalArgumentException("Lista tras jest pusta!");
         }
@@ -45,7 +45,18 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             actualPolygon = actualPolygon.intersection(polygon);
         }
 
-        return convertPolygonToRegion((Polygon) actualPolygon);
+        if (actualPolygon instanceof Polygon) {
+            return List.of(convertPolygonToRegion((Polygon) actualPolygon));
+        } else if (actualPolygon instanceof org.locationtech.jts.geom.MultiPolygon multiPolygon) {
+            List<Region> regions = new ArrayList<>();
+            for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
+                regions.add(convertPolygonToRegion(poly));
+            }
+            return regions;
+        } else {
+            throw new IllegalArgumentException("Unsupported geometry type: " + actualPolygon.getGeometryType());
+        }
     }
 
 
