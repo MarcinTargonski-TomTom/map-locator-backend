@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.services.map;
 
+import com.tomtom.locator.map.map_locator.loggers.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
+@MethodCallLogged
 public class TomTomApiClient implements MapService {
 
     @Value("${tomtom.api.base-url}")

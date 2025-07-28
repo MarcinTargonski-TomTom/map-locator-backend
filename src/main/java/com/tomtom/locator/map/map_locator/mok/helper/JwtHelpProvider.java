@@ -4,7 +4,11 @@ import com.tomtom.locator.map.map_locator.mok.config.JwtProperties;
 import com.tomtom.locator.map.map_locator.mok.exception.ExpiredTokenException;
 import com.tomtom.locator.map.map_locator.mok.exception.InvalidTokenException;
 import com.tomtom.locator.map.map_locator.mok.model.Account;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
@@ -41,7 +45,6 @@ class JwtHelpProvider implements JwtHelper {
     public String extractSubject(@NonNull String token) {
         return validateAndExtractClaimsFromJwtToken(token).getSubject();
     }
-
 
 
     private String generateToken(String subject, Map<String, Object> claims, Instant issuedAt, Instant expirationAt, Key key, SignatureAlgorithm alg) {

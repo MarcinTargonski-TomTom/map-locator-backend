@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.services.matcher;
 
+import com.tomtom.locator.map.map_locator.loggers.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.model.Region;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@MethodCallLogged
 public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
     private final MapService mapService;

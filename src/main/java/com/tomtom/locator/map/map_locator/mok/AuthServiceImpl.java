@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.mok;
 
+import com.tomtom.locator.map.map_locator.loggers.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.mok.exception.AccountNotActiveException;
 import com.tomtom.locator.map.map_locator.mok.exception.InvalidCredentialsException;
 import com.tomtom.locator.map.map_locator.mok.helper.JwtHelper;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
+@MethodCallLogged
 class AuthServiceImpl implements AuthService {
 
     private final AccountRepository accountRepository;
