@@ -6,7 +6,12 @@ import com.tomtom.locator.map.map_locator.model.Point;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,7 +52,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
         if (actualPolygon instanceof Polygon) {
             return List.of(convertPolygonToRegion((Polygon) actualPolygon));
-        } else if (actualPolygon instanceof org.locationtech.jts.geom.MultiPolygon multiPolygon) {
+        } else if (actualPolygon instanceof MultiPolygon multiPolygon) {
             List<Region> regions = new ArrayList<>();
             for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                 Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
