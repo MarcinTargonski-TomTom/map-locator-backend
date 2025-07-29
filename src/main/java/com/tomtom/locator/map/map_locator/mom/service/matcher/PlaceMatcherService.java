@@ -6,5 +6,5 @@ import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import java.util.List;
 
 public interface PlaceMatcherService {
-    LocationMatch findRegionForPlaces(List<PointOfInterest> pois);
+    List<LocationMatch> findRegionForPlaces(List<PointOfInterest> pois);
 }

@@ -1,11 +1,9 @@
 package com.tomtom.locator.map.map_locator.mom.dto;
 
-import com.tomtom.locator.map.map_locator.model.Region;
-
-import java.util.List;
+import java.util.Map;
 
 public record LocationMatchDTO(
-        List<Region> requestRegion,
-        List<Region> responseRegion
+        Map<PointOfInterestDTO, RegionDTO> requestRegions,
+        RegionDTO responseRegion
 ) {
 }

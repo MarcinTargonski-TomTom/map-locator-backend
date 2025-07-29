@@ -4,6 +4,7 @@ import com.tomtom.locator.map.map_locator.model.BudgetType;
 import com.tomtom.locator.map.map_locator.model.TravelMode;
 
 public record PointOfInterestDTO(
+        String name,
         PointDTO center,
         int value,
         BudgetType budgetType,
