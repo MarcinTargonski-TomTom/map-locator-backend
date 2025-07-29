@@ -1,8 +1,11 @@
 package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
-import com.tomtom.locator.map.map_locator.model.*;
+import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
+import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.model.Point;
+import com.tomtom.locator.map.map_locator.model.PointOfInterest;
+import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +32,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
     @Override
     public LocationMatch findRegionForPlaces(List<PointOfInterest> pois) {
         List<CalculatedRoute> calculatedRoutes = pois.stream().map(mapService::getRegionForPoint).toList();
-        Region overlapingRegion = getOverlapingRegion(calculatedRoutes);
+        List<Region> overlapingRegion = getOverlapingRegion(calculatedRoutes);
 
         List<Region> requestRegions = calculatedRoutes.stream()
                 .map(CalculatedRoute::getReachableRange)

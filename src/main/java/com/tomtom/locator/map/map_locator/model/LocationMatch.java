@@ -1,7 +1,14 @@
 package com.tomtom.locator.map.map_locator.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -17,6 +24,6 @@ public class LocationMatch extends AbstractEntity {
     @OneToMany
     private List<Region> requestRegions;
 
-    @OneToOne
-    private Region responseRegion;
+    @OneToMany
+    private List<Region> responseRegions;
 }
