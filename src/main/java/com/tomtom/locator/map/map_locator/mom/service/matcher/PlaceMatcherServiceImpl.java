@@ -7,7 +7,7 @@ import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.model.SearchApiResponse;
 import com.tomtom.locator.map.map_locator.model.SearchApiResult;
-import com.tomtom.locator.map.map_locator.mom.dto.mappers.PointOfInterestMapper;
+import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
