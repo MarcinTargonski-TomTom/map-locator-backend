@@ -5,6 +5,10 @@ import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.model.Point;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.model.Region;
+import com.tomtom.locator.map.map_locator.model.SearchApiResponse;
+import com.tomtom.locator.map.map_locator.model.SearchApiResult;
+import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
+import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -28,6 +32,23 @@ import java.util.stream.Stream;
 public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
     private final MapService mapService;
+    private final LocationMatchRepository locationMatchRepository;
+    private final PointOfInterestMapper pointOfInterestMapper;
+
+    @Override
+    public List<Region> getPlacesMatchingQuery(PointOfInterest poi) {
+        SearchApiResponse response = mapService.getPlacesMatchingQuery(poi);
+        if (response == null || response.getResults() == null) {
+            return new ArrayList<>();
+        }
+        List<Region> regions = new ArrayList<>();
+        for (SearchApiResult result : response.getResults()) {
+            PointOfInterest resultPoi = pointOfInterestMapper.fromSearchApiResult(result, poi);
+            Region region = mapService.getRegionForPoint(resultPoi).getReachableRange();
+            regions.add(region);
+        }
+        return regions;
+    }
 
     @Override
     public List<LocationMatch> findRegionForPlaces(List<PointOfInterest> pois) {

@@ -25,4 +25,14 @@ public class PointOfInterest extends AbstractEntity {
     int value;
     TravelMode travelMode;
     private String name;
+
+    /**
+     * Returns the query string with spaces replaced by '+'.
+     * This is necessary for URL encoding when making requests to the search API.
+     *
+     * @return the formatted query string
+     */
+    public String unifyQuery() {
+        return name.replace(" ", "+");
+    }
 }
