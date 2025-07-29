@@ -1,4 +1,4 @@
-package com.tomtom.locator.map.map_locator.mom.dto.mappers;
+package com.tomtom.locator.map.map_locator.mom.dto.mapper;
 
 import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mom.dto.RegionDTO;
