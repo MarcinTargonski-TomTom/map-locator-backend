@@ -15,6 +15,7 @@ import java.util.UUID;
 @MappedSuperclass
 @Getter
 @ToString
+@EqualsAndHashCode
 public abstract class AbstractEntity {
 
     @Id

@@ -1,12 +1,20 @@
 package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
-import com.tomtom.locator.map.map_locator.model.*;
+import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
+import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.model.Point;
+import com.tomtom.locator.map.map_locator.model.PointOfInterest;
+import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +32,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
     @Override
     public LocationMatch findRegionForPlaces(List<PointOfInterest> pois) {
         List<CalculatedRoute> calculatedRoutes = pois.stream().map(mapService::getRegionForPoint).toList();
-        Region overlapingRegion = getOverlapingRegion(calculatedRoutes);
+        List<Region> overlapingRegion = getOverlapingRegion(calculatedRoutes);
 
         List<Region> requestRegions = calculatedRoutes.stream()
                 .map(CalculatedRoute::getReachableRange)
@@ -33,7 +41,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         return new LocationMatch(requestRegions, overlapingRegion);
     }
 
-    private Region getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
+    private List<Region> getOverlapingRegion(List<CalculatedRoute> calculatedRoutes) {
         if (calculatedRoutes == null || calculatedRoutes.isEmpty()) {
             throw new IllegalArgumentException("Lista tras jest pusta!");
         }
@@ -45,7 +53,18 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             actualPolygon = actualPolygon.intersection(polygon);
         }
 
-        return convertPolygonToRegion((Polygon) actualPolygon);
+        if (actualPolygon instanceof Polygon) {
+            return List.of(convertPolygonToRegion((Polygon) actualPolygon));
+        } else if (actualPolygon instanceof MultiPolygon multiPolygon) {
+            List<Region> regions = new ArrayList<>();
+            for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
+                regions.add(convertPolygonToRegion(poly));
+            }
+            return regions;
+        } else {
+            throw new IllegalArgumentException("Unsupported geometry type: " + actualPolygon.getGeometryType());
+        }
     }
 
 
