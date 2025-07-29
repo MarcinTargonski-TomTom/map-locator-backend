@@ -3,6 +3,7 @@ package com.tomtom.locator.map.map_locator.mom.service.map;
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
+import com.tomtom.locator.map.map_locator.model.SearchApiResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -32,5 +33,20 @@ public class TomTomApiClient implements MapService {
                                 .build()
                 )
                 .retrieve().body(CalculatedRoute.class);
+    }
+
+    @Override
+    public SearchApiResponse getPlacesMatchingQuery(PointOfInterest poi) {
+        return RestClient.builder().baseUrl(baseUrl).build().get().uri(
+                        uriBuilder -> uriBuilder
+                                .path(String.format("/search/2/search/%s.json", poi.unifyQuery()))
+                                .queryParam("lat", poi.getCenter().getLatitude())
+                                .queryParam("lon", poi.getCenter().getLongitude())
+                                .queryParam("limit", 3)
+                                .queryParam("language", "pl-PL") //TODO: make it configurable
+                                .queryParam("key", key)
+                                .build()
+                )
+                .retrieve().body(SearchApiResponse.class);
     }
 }
