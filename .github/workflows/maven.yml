@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      TOMTOM_API_KEY: ${{ secrets.TOMTOM_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4
@@ -22,4 +23,5 @@ jobs:
       - name: Run test with Maven
         run: |
           mvn clean verify \
-          -Dapp.mok.security.authToken.key="${JWT_SECRET}"
+          -Dapp.mok.security.authToken.key="${JWT_SECRET}" \
+          -Dtomtom.api.key="${TOMTOM_API_KEY}" \
