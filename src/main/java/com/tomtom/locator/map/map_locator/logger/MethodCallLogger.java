@@ -81,7 +81,7 @@ public class MethodCallLogger {
     }
 
 
-    @Around("within(@com.tomtom.locator.map.map_locator.loggers.MethodCallLogged *)")
+    @Around("within(@com.tomtom.locator.map.map_locator.logger.MethodCallLogged *)")
     private Object logServiceAndRepository(ProceedingJoinPoint joinPoint) throws Throwable {
         callDepth.set(callDepth.get() + 1);
 
@@ -94,7 +94,6 @@ public class MethodCallLogger {
             return result;
         } catch (Exception e) {
             appendLog("Exception in method " + methodName + ": " + e.getClass(), RED);
-            decreaseCallDepth();
             e.printStackTrace();
             decreaseCallDepth();
             throw e;
