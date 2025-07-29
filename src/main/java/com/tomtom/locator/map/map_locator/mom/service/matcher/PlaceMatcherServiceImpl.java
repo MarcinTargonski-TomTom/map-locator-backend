@@ -108,8 +108,9 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
     private List<Region> convertMultiPolygonToRegion(MultiPolygon multiPolygon) {
         List<Region> overlappingRegions = new ArrayList<>();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-            Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
-            overlappingRegions.add(convertPolygonToRegion(poly));
+            if (multiPolygon.getGeometryN(i) instanceof Polygon poly) {
+                overlappingRegions.add(convertPolygonToRegion(poly));
+            }
         }
         return overlappingRegions;
     }
