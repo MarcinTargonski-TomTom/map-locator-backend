@@ -6,6 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BudgetType {
-    DISTANCE("distanceBudgetInMeters"), TIME("timeBudgetInSec");
+    DISTANCE("distanceBudgetInMeters"),
+    TIME("timeBudgetInSec"),
+    ENERGY("energyBudgetInkWh"),
+    FUEL("fuelBudgetInLiters");
     private final String queryParamName;
 }
