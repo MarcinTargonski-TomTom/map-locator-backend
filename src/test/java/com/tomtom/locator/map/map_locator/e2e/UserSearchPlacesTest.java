@@ -3,6 +3,7 @@ package com.tomtom.locator.map.map_locator.e2e;
 import com.tomtom.locator.map.map_locator.config.BaseIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,7 @@ public class UserSearchPlacesTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.CREATED.value());
 
         //then can log in
+        var response =
         given()
             .contentType(ContentType.JSON)
             .body(String.format("""
@@ -72,6 +74,11 @@ public class UserSearchPlacesTest extends BaseIntegrationTest {
         .when()
             .post("/auth/login")
         .then()
-            .statusCode(HttpStatus.OK.value());
+            .statusCode(HttpStatus.OK.value())
+        .extract();
+
+        var authToken = response.body().jsonPath().getString("auth");
+
+        Assertions.assertNotNull(authToken);
     }
 }
