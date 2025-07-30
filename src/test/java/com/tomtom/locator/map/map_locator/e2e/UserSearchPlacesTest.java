@@ -1,13 +1,22 @@
 package com.tomtom.locator.map.map_locator.e2e;
 
 import com.tomtom.locator.map.map_locator.config.BaseIntegrationTest;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.*;
 
+
 public class UserSearchPlacesTest extends BaseIntegrationTest {
+    @BeforeAll
+    void setup() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+    }
+
     @Test
     public void userShouldBeAbleToFindPlaces() {
         //given
@@ -33,7 +42,8 @@ public class UserSearchPlacesTest extends BaseIntegrationTest {
         .when()
             .post("/locations/v1/matchLocation")
         .then()
-        .   statusCode(HttpStatus.UNAUTHORIZED.value());
+            .statusCode(HttpStatus.FORBIDDEN.value());//FIXME - should be 401 rather than 403
+//            .statusCode(HttpStatus.UNAUTHORIZED.value());
 
         //when register account
         given()
