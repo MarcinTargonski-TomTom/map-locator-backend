@@ -54,9 +54,6 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
     public List<LocationMatch> findRegionForPlaces(List<PointOfInterest> pois) {
         Stream<PointOfInterest> poisByCoordinates = pois.stream().filter(poi -> poi.getCenter() != null);
         Stream<PointOfInterest> poisByName = pois.stream().filter(poi -> poi.getCenter() == null);
-        //todo handle pois search by name
-
-
         Map<PointOfInterest, Region> requestRegionsByCoordinates = poisByCoordinates
                 .collect(
                         Collectors.toMap(
@@ -64,11 +61,29 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                                 poi -> mapService.getRegionForPoint(poi).getReachableRange()
                         )
                 );
-
-
-        return getOverlappingRegions(requestRegionsByCoordinates.values().stream().toList()).stream().map(
+        List<LocationMatch> matchesForCoordinates = new ArrayList<>(getOverlappingRegions(requestRegionsByCoordinates.values().stream().toList()).stream().map(
                 overlapingRegion -> new LocationMatch(requestRegionsByCoordinates, overlapingRegion)
-        ).toList();
+        ).toList());
+        List<LocationMatch> allMatches = new ArrayList<>();
+        for (PointOfInterest poi : poisByName.toList()) {
+            for (LocationMatch match : matchesForCoordinates) {
+                poi.setCenter(match.getResponseRegion().getCenter());
+                List<Region> regions = getPlacesMatchingQuery(poi);
+                for (Region region : regions) {
+                    List<Region> unmappedRegions = new ArrayList<>(match.getRequestRegions().values());
+                    List<Region> overlappedRegions = getOverlappingRegions(unmappedRegions);
+                    for (Region overlappedRegion : overlappedRegions) {
+                        if (!region.getBoundary().isEmpty()) {
+                            Map<PointOfInterest, Region> requestRegionsByName = match.getRequestRegions();
+                            requestRegionsByName.put(poi, overlappedRegion);
+                            LocationMatch locationMatch = new LocationMatch(requestRegionsByName, overlappedRegion);
+                            allMatches.add(locationMatch);
+                        }
+                    }
+                }
+            }
+        }
+        return allMatches;
     }
 
     List<Region> getOverlappingRegions(List<Region> regions) {

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 
@@ -20,6 +21,7 @@ import lombok.ToString;
 @Getter
 public class PointOfInterest extends AbstractEntity {
     @OneToOne
+    @Setter
     Point center;
     BudgetType budgetType;
     int value;
