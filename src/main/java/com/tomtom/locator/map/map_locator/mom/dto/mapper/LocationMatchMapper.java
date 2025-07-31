@@ -28,7 +28,7 @@ public class LocationMatchMapper {
         return list;
     }
 
-    LocationMatchDTO toDTO(LocationMatch locationMatch) {
+    public LocationMatchDTO toDTO(LocationMatch locationMatch) {
         return new LocationMatchDTO(map(locationMatch.getRequestRegions()), regionMapper.toDTO(locationMatch.getResponseRegion()));
     }
 
