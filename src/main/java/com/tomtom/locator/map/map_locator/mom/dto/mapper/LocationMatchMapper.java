@@ -1,20 +1,47 @@
 package com.tomtom.locator.map.map_locator.mom.dto.mapper;
 
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
+import com.tomtom.locator.map.map_locator.model.PointOfInterest;
+import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mom.dto.LocationMatchDTO;
-import org.mapstruct.Mapper;
+import com.tomtom.locator.map.map_locator.mom.dto.RequestRegionDTO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-@Mapper(componentModel = "spring", uses = RegionMapper.class)
-public interface LocationMatchMapper {
+@Component
+@RequiredArgsConstructor
+public class LocationMatchMapper {
 
-    LocationMatchDTO toDTO(LocationMatch locationMatch);
+    private final RegionMapper regionMapper;
+    private final PointOfInterestMapper pointOfInterestMapper;
 
-    LocationMatch toModel(LocationMatchDTO locationMatchDTO);
+    public List<LocationMatchDTO> toDTO(List<LocationMatch> locationMatches) {
+        if (locationMatches == null) return new ArrayList<>();
+        List<LocationMatchDTO> list = new ArrayList<>();
+        for (LocationMatch locationMatch : locationMatches) {
+            list.add(toDTO(locationMatch));
+        }
+        return list;
+    }
 
-    List<LocationMatchDTO> toDTO(List<LocationMatch> list);
+    public LocationMatchDTO toDTO(LocationMatch locationMatch) {
+        return new LocationMatchDTO(map(locationMatch.getRequestRegions()), regionMapper.toDTO(locationMatch.getResponseRegion()));
+    }
 
-    List<LocationMatch> toModel(List<LocationMatchDTO> list);
+    private List<RequestRegionDTO> map(Map<PointOfInterest, Region> map) {
+        if (map == null) return new ArrayList<>();
+        List<RequestRegionDTO> list = new ArrayList<>();
+        for (Map.Entry<PointOfInterest, Region> entry : map.entrySet()) {
+            list.add(new RequestRegionDTO(
+                    pointOfInterestMapper.toDto(entry.getKey()),
+                    regionMapper.toDTO(entry.getValue())
+            ));
+        }
+        return list;
+    }
 
 }
