@@ -36,4 +36,7 @@ app:
       authToken:
         timeout-in-minutes: 15
         key: your-very-secret-key
+      cors:
+        allowedOrigins:
+          - http://localhost:5173
 
