@@ -32,7 +32,7 @@ public class LocationMatchMapper {
         return new LocationMatchDTO(map(locationMatch.getRequestRegions()), regionMapper.toDTO(locationMatch.getResponseRegion()));
     }
 
-    List<RequestRegionDTO> map(Map<PointOfInterest, Region> map) {
+    private List<RequestRegionDTO> map(Map<PointOfInterest, Region> map) {
         if (map == null) return new ArrayList<>();
         List<RequestRegionDTO> list = new ArrayList<>();
         for (Map.Entry<PointOfInterest, Region> entry : map.entrySet()) {
