@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.e2e;
 
+import com.tomtom.locator.map.map_locator.config.BaseE2ETest;
 import com.tomtom.locator.map.map_locator.config.BaseIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 
-public class UserSearchPlacesTest extends BaseIntegrationTest {
+public class UserSearchPlacesTest extends BaseE2ETest {
     @Test
     public void userShouldBeAbleToFindPlaces() {
         //expect to not allow to search when not authenticated
