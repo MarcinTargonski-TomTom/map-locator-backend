@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 
-public class UserSearchPlacesTest extends BaseIntegrationTest {
+public class UserSearchPlacesIT extends BaseE2ETest {
     @Test
     public void userShouldBeAbleToFindPlaces() {
         //expect to not allow to search when not authenticated
