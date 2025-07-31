@@ -1,7 +1,7 @@
 package com.tomtom.locator.map.map_locator.mom.dto;
 
 public record RequestRegionDTO(
-        PointOfInterestDTO poi,
+        PointOfInterestDTO pointOfInterest,
         RegionDTO region
 ) {
 }
