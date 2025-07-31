@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.*;
 
 public class UserSearchPlacesTest extends BaseIntegrationTest {
@@ -26,13 +28,11 @@ public class UserSearchPlacesTest extends BaseIntegrationTest {
         //when register account
         given()
             .contentType(ContentType.JSON)
-            .body(String.format("""
-                {
-                  "login": "%s",
-                  "email": "%s",
-                  "password": "%s"
-                }
-            """, ACCOUNT_USERNAME, ACCOUNT_EMAIL, ACCOUNT_PASSWORD))
+                .body(Map.of(
+                        "login", ACCOUNT_USERNAME,
+                        "email", ACCOUNT_EMAIL,
+                        "password", ACCOUNT_PASSWORD
+                ))
         .when()
             .post("/accounts/register")
         .then()
@@ -42,12 +42,10 @@ public class UserSearchPlacesTest extends BaseIntegrationTest {
         var response =
         given()
             .contentType(ContentType.JSON)
-            .body(String.format("""
-                {
-                  "login": "%s",
-                  "password": "%s"
-                }
-            """, ACCOUNT_USERNAME, ACCOUNT_PASSWORD))
+            .body(Map.of(
+                    "login", ACCOUNT_USERNAME,
+                    "password", ACCOUNT_PASSWORD
+            ))
         .when()
             .post("/auth/login")
         .then()
