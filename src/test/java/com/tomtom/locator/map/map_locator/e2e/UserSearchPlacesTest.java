@@ -1,7 +1,6 @@
 package com.tomtom.locator.map.map_locator.e2e;
 
 import com.tomtom.locator.map.map_locator.config.BaseE2ETest;
-import com.tomtom.locator.map.map_locator.config.BaseIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 
 public class UserSearchPlacesTest extends BaseE2ETest {
     @Test
@@ -23,8 +22,7 @@ public class UserSearchPlacesTest extends BaseE2ETest {
         .when()
             .post("/locations/v1/matchLocation")
         .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());//FIXME - should be 401 rather than 403
-//            .statusCode(HttpStatus.UNAUTHORIZED.value());
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
 
         //when register account
         given()
@@ -65,8 +63,7 @@ public class UserSearchPlacesTest extends BaseE2ETest {
         .when()
             .post("/locations/v1/matchLocation")
         .then()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());//FIXME don't know why can't search by this poi
-//            .statusCode(HttpStatus.OK.value());
+            .statusCode(HttpStatus.OK.value());
     }
 
     @BeforeAll
