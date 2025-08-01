@@ -3,12 +3,16 @@ package com.tomtom.locator.map.map_locator.mom.service.map;
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.CalculatedRoute;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
+import com.tomtom.locator.map.map_locator.model.SearchApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+
 @Service
 @MethodCallLogged
+@RequiredArgsConstructor
 public class TomTomApiClient implements MapService {
 
     @Value("${tomtom.api.base-url}")
@@ -17,9 +21,15 @@ public class TomTomApiClient implements MapService {
     @Value("${tomtom.api.key}")
     private String key;
 
+    private final RestClient.Builder restClientBuilder;
+
     @Override
     public CalculatedRoute getRegionForPoint(PointOfInterest poi) {
-        return RestClient.builder().baseUrl(baseUrl).build().get().uri(
+        return restClientBuilder
+                .baseUrl(baseUrl)
+                .build()
+                .get()
+                .uri(
                         uriBuilder -> uriBuilder
                                 .path(String.format("/routing/1/calculateReachableRange/%s,%s/json", poi.getCenter().getLatitude(), poi.getCenter().getLongitude()))
                                 .queryParam(poi.getBudgetType().getQueryParamName(), poi.getValue())
@@ -31,6 +41,27 @@ public class TomTomApiClient implements MapService {
                                 .queryParam("key", key)
                                 .build()
                 )
-                .retrieve().body(CalculatedRoute.class);
+                .retrieve()
+                .body(CalculatedRoute.class);
+    }
+
+    @Override
+    public SearchApiResponse getPlacesMatchingQuery(PointOfInterest poi) {
+        return restClientBuilder
+                .baseUrl(baseUrl)
+                .build()
+                .get()
+                .uri(
+                        uriBuilder -> uriBuilder
+                                .path(String.format("/search/2/search/%s.json", poi.unifyQuery()))
+                                .queryParam("lat", poi.getCenter().getLatitude())
+                                .queryParam("lon", poi.getCenter().getLongitude())
+                                .queryParam("limit", 3)
+                                .queryParam("language", "pl-PL") //TODO: make it configurable
+                                .queryParam("key", key)
+                                .build()
+                )
+                .retrieve()
+                .body(SearchApiResponse.class);
     }
 }

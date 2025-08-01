@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
@@ -19,17 +21,14 @@ class LocationMatchServiceImpl implements LocationMatchService {
     private final LocationMatchRepository locationMatchRepository;
 
     @Override
-    public LocationMatch addToAccount(LocationMatch locationMatch) {
+    public void addToAccount(List<LocationMatch> locationMatches) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String login = authentication.getName();
 
         accountRepository.findByLogin(login)
                 .ifPresent(account -> {
-                    account.addLocationMatch(locationMatch);
-                    locationMatchRepository.save(locationMatch);
+                    account.addLocationMatches(locationMatches);
                 });
-
-        return locationMatch;
     }
 }

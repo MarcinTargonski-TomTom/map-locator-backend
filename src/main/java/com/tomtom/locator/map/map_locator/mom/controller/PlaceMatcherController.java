@@ -5,7 +5,8 @@ import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
 
 import java.util.List;
 
+
 public interface PlaceMatcherController {
 
-    LocationMatchDTO matchLocations(List<PointOfInterestDTO> points);
+    List<LocationMatchDTO> matchLocations(List<PointOfInterestDTO> points);
 }

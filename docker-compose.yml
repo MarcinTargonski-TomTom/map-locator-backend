@@ -8,3 +8,27 @@ services:
     container_name: map_locator
     ports:
       - "5432:5432"
+    networks:
+      - backend-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/map_locator
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+      APP_MOK_SECURITY_AUTH_TOKEN_KEY: yourVerySecretKeyThatShouldBeLongerThan256Bits
+      TOMTOM_API_KEY: PasteYourTomTomApiKey
+    depends_on:
+      - postgres
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge

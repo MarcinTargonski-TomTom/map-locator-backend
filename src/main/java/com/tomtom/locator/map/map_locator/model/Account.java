@@ -62,8 +62,8 @@ public class Account extends AbstractEntity implements UserDetails {
         return new Account(false, credentials.login(), email, credentials.password(), EnumSet.of(AccountRole.TENANT), AccountState.NOT_VERIFIED, new ArrayList<>());
     }
 
-    public void addLocationMatch(@NonNull LocationMatch locationMatch) {
-        locationMatches.add(locationMatch);
+    public void addLocationMatches(@NonNull List<LocationMatch> locationMatches) {
+        this.locationMatches.addAll(locationMatches);
     }
 
     @Override

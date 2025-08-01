@@ -1,12 +1,11 @@
 package com.tomtom.locator.map.map_locator.mom.controller;
 
-
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.mom.dto.LocationMatchDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
-import com.tomtom.locator.map.map_locator.mom.dto.mappers.LocationMatchMapper;
-import com.tomtom.locator.map.map_locator.mom.dto.mappers.PointOfInterestMapper;
+import com.tomtom.locator.map.map_locator.mom.dto.mapper.LocationMatchMapper;
+import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.LocationMatchService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.PlaceMatcherService;
 import lombok.AllArgsConstructor;
@@ -32,10 +31,9 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public LocationMatchDTO matchLocations(@RequestBody List<PointOfInterestDTO> pois) {
-        LocationMatch locationMatch = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
-        locationMatchService.addToAccount(locationMatch);
-        return locationMatchMapper.toDTO(locationMatch);
+    public List<LocationMatchDTO> matchLocations(@RequestBody List<PointOfInterestDTO> pois) {
+        List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
+        locationMatchService.addToAccount(regionForPlaces);
+        return locationMatchMapper.toDTO(regionForPlaces);
     }
-
 }

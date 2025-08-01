@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,17 +52,18 @@ class LocationMatchServiceTest {
     void addToAccount() {
         // Given
         var givenLocationMatch = mock(LocationMatch.class);
+        var givenLocationMatches = List.of(givenLocationMatch);
         var givenAccount = Account.withEmailAndCredentials("email", new Credentials("login", "password"));
 
         given(accountRepository.findByLogin(any()))
                 .willReturn(Optional.of(givenAccount));
 
         // When
-        var result = underTest.addToAccount(givenLocationMatch);
+        underTest.addToAccount(givenLocationMatches);
 
         // Then
         assertThat(givenAccount.getLocationMatches())
-                .containsExactly(result);
+                .isEqualTo(givenLocationMatches);
     }
 
     @DisplayName("Should not throw when account does not exist")
@@ -69,11 +71,12 @@ class LocationMatchServiceTest {
     void shouldFailToAddToAccount() {
         // Given
         var givenLocationMatch = mock(LocationMatch.class);
+        var givenLocationMatches = List.of(givenLocationMatch);
         given(accountRepository.findByLogin(any()))
                 .willReturn(Optional.empty());
 
         // When
-        var result = catchException(() -> underTest.addToAccount(givenLocationMatch));
+        var result = catchException(() -> underTest.addToAccount(givenLocationMatches));
 
         // Then
         assertThat(result)
