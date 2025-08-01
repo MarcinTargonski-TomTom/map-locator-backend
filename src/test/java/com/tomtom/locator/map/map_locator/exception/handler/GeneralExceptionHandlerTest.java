@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -126,6 +127,27 @@ class GeneralExceptionHandlerTest {
         assertThat(body.message()).isEqualTo(exception.getMessage());
         assertThat(body.path()).isEqualTo("/api/test");
         assertThat(body.statusCode()).isEqualTo(exception.getStatusCode());
+        assertThat(body.timestamp()).isBeforeOrEqualTo(ZonedDateTime.now());
+    }
+
+    @DisplayName("Should handle AuthorizationDeniedException errors and return a 403 response")
+    @Test
+    void handleAuthorizationDeniedError() {
+        // Given
+        var exception = new AuthorizationDeniedException("Unexpected error");
+        var request = mock(HttpServletRequest.class);
+        given(request.getServletPath()).willReturn("/api/test");
+
+        // When
+        var response = underTest.handleAuthorizationDeniedException(exception, request);
+
+        // Then
+        var body = response.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(body).isNotNull();
+        assertThat(body.message()).isEqualTo(ExceptionMessage.ACCESS_DENIED);
+        assertThat(body.path()).isEqualTo("/api/test");
+        assertThat(body.statusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(body.timestamp()).isBeforeOrEqualTo(ZonedDateTime.now());
     }
 
