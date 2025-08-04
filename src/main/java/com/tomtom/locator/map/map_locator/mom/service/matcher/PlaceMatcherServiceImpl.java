@@ -13,6 +13,7 @@ import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -122,7 +123,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             throw new IllegalArgumentException("Lista tras jest pusta!");
         }
 
-        Geometry actualPolygon = convertRegionToJTSPolygon(regions.get(0));
+        Geometry actualPolygon = convertRegionToJTSPolygon(regions.getFirst());
 
         for (int i = 1; i < regions.size(); i++) {
             Polygon polygon = convertRegionToJTSPolygon(regions.get(i));
@@ -131,7 +132,8 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
         return switch (actualPolygon) {
             case Polygon polygon -> List.of(convertPolygonToRegion(polygon));
-            case MultiPolygon multiPolygon -> convertMultiPolygonToRegion(multiPolygon);
+            case MultiPolygon multiPolygon -> convertGeometryCollectionToRegion(multiPolygon);
+            case GeometryCollection geometryCollection -> convertGeometryCollectionToRegion(geometryCollection);
             default ->
                     throw new IllegalArgumentException("Unsupported geometry type: " + actualPolygon.getGeometryType());
         };
@@ -172,7 +174,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         return region;
     }
 
-    private List<Region> convertMultiPolygonToRegion(MultiPolygon multiPolygon) {
+    private List<Region> convertGeometryCollectionToRegion(GeometryCollection multiPolygon) {
         List<Region> overlappingRegions = new ArrayList<>();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             if (multiPolygon.getGeometryN(i) instanceof Polygon poly) {
