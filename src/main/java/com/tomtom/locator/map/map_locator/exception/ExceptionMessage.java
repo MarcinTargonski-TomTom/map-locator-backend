@@ -15,4 +15,6 @@ public class ExceptionMessage {
     public static final String EXTERNAL_SERVICE_CLIENT_ERROR = "Couldn't fetch required data from external service";
     public static final String EXTERNAL_SERVICE_SERVER_ERROR = "Couldn't fetch required data from external service";
     public static final String ACCESS_DENIED = "You do not have permission to access this resource";
+    public static final String ANY_COORDINATES_GIVEN_EXCEPTION = "At least one coordinate must be given";
+    public static final String EMPTY_LIST = "Empty list provided, at least one item is required";
 }
