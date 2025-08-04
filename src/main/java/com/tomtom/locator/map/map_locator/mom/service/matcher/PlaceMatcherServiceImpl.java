@@ -1,5 +1,8 @@
 package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
+import com.tomtom.locator.map.map_locator.exception.AnyCoordinatesGivenException;
+import com.tomtom.locator.map.map_locator.exception.EmptyListException;
+import com.tomtom.locator.map.map_locator.exception.UnsupportedGeometryTypeException;
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.model.Point;
@@ -66,12 +69,14 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                         poi -> mapService.getRegionForPoint(poi).getReachableRange()
                 ));
 
+        if (requestRegionsByCoordinates.isEmpty()) {
+            throw new AnyCoordinatesGivenException();
+        }
         List<Region> baseOverlappingRegions = getOverlappingRegions(
                 requestRegionsByCoordinates.values().stream().toList()
         );
 
         List<LocationMatch> allMatches = new ArrayList<>();
-
         for (Region baseOverlappingRegion : baseOverlappingRegions) {
 
             if (poisByName.isEmpty()) {
@@ -120,7 +125,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
     List<Region> getOverlappingRegions(List<Region> regions) {
         if (regions == null || regions.isEmpty()) {
-            throw new IllegalArgumentException("Lista tras jest pusta!");
+            throw new EmptyListException();
         }
 
         Geometry actualPolygon = convertRegionToJTSPolygon(regions.getFirst());
@@ -134,8 +139,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             case Polygon polygon -> List.of(convertPolygonToRegion(polygon));
             case MultiPolygon multiPolygon -> convertGeometryCollectionToRegion(multiPolygon);
             case GeometryCollection geometryCollection -> convertGeometryCollectionToRegion(geometryCollection);
-            default ->
-                    throw new IllegalArgumentException("Unsupported geometry type: " + actualPolygon.getGeometryType());
+            default -> throw new UnsupportedGeometryTypeException(actualPolygon.getGeometryType());
         };
     }
 
