@@ -13,6 +13,7 @@ import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -21,10 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -52,37 +53,68 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
     @Override
     public List<LocationMatch> findRegionForPlaces(List<PointOfInterest> pois) {
-        Stream<PointOfInterest> poisByCoordinates = pois.stream().filter(poi -> poi.getCenter() != null);
-        Stream<PointOfInterest> poisByName = pois.stream().filter(poi -> poi.getCenter() == null);
-        Map<PointOfInterest, Region> requestRegionsByCoordinates = poisByCoordinates
-                .collect(
-                        Collectors.toMap(
-                                poi -> poi,
-                                poi -> mapService.getRegionForPoint(poi).getReachableRange()
-                        )
-                );
-        List<LocationMatch> matchesForCoordinates = new ArrayList<>(getOverlappingRegions(requestRegionsByCoordinates.values().stream().toList()).stream().map(
-                overlapingRegion -> new LocationMatch(requestRegionsByCoordinates, overlapingRegion)
-        ).toList());
+        List<PointOfInterest> poisWithCoordinates = pois.stream()
+                .filter(poi -> poi.getCenter() != null)
+                .toList();
+        List<PointOfInterest> poisByName = pois.stream()
+                .filter(poi -> poi.getCenter() == null)
+                .toList();
+
+        Map<PointOfInterest, Region> requestRegionsByCoordinates = poisWithCoordinates.stream()
+                .collect(Collectors.toMap(
+                        poi -> poi,
+                        poi -> mapService.getRegionForPoint(poi).getReachableRange()
+                ));
+
+        List<Region> baseOverlappingRegions = getOverlappingRegions(
+                requestRegionsByCoordinates.values().stream().toList()
+        );
+
         List<LocationMatch> allMatches = new ArrayList<>();
-        for (PointOfInterest poi : poisByName.toList()) {
-            for (LocationMatch match : matchesForCoordinates) {
-                poi.setCenter(match.getResponseRegion().getCenter());
-                List<Region> regions = getPlacesMatchingQuery(poi);
-                for (Region region : regions) {
-                    List<Region> unmappedRegions = new ArrayList<>(match.getRequestRegions().values());
-                    List<Region> overlappedRegions = getOverlappingRegions(unmappedRegions);
-                    for (Region overlappedRegion : overlappedRegions) {
-                        if (!region.getBoundary().isEmpty()) {
-                            Map<PointOfInterest, Region> requestRegionsByName = match.getRequestRegions();
-                            requestRegionsByName.put(poi, overlappedRegion);
-                            LocationMatch locationMatch = new LocationMatch(requestRegionsByName, overlappedRegion);
-                            allMatches.add(locationMatch);
-                        }
-                    }
+
+        for (Region baseOverlappingRegion : baseOverlappingRegions) {
+
+            if (poisByName.isEmpty()) {
+                LocationMatch baseMatch = new LocationMatch(requestRegionsByCoordinates, baseOverlappingRegion);
+                allMatches.add(baseMatch);
+                continue;
+            }
+
+            for (PointOfInterest poiByName : poisByName) {
+                PointOfInterest searchPoi = new PointOfInterest(
+                        baseOverlappingRegion.getCenter(),
+                        poiByName.getBudgetType(),
+                        poiByName.getValue(),
+                        poiByName.getTravelMode(),
+                        poiByName.getName()
+                );
+
+                SearchApiResponse searchResponse = mapService.getPlacesMatchingQuery(searchPoi);
+                if (searchResponse == null || searchResponse.getResults() == null) {
+                    continue;
                 }
+
+                searchResponse.getResults().forEach(searchResult -> {
+                    PointOfInterest foundPoi = pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName);
+
+                    Region foundRegion = mapService.getRegionForPoint(foundPoi).getReachableRange();
+
+                    Map<PointOfInterest, Region> newRequestRegions = new HashMap<>(requestRegionsByCoordinates);
+                    newRequestRegions.put(foundPoi, foundRegion);
+
+                    List<Region> regionsForIntersection = new ArrayList<>(requestRegionsByCoordinates.values());
+                    regionsForIntersection.add(foundRegion);
+
+                    List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
+
+                    newOverlappingRegions.forEach(newOverlappingRegion -> {
+                        LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
+                        allMatches.add(locationMatch);
+                    });
+                });
             }
         }
+
         return allMatches;
     }
 
@@ -100,7 +132,8 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
         return switch (actualPolygon) {
             case Polygon polygon -> List.of(convertPolygonToRegion(polygon));
-            case MultiPolygon multiPolygon -> convertMultiPolygonToRegion(multiPolygon);
+            case MultiPolygon multiPolygon -> convertGeometryCollectionToRegion(multiPolygon);
+            case GeometryCollection geometryCollection -> convertGeometryCollectionToRegion(geometryCollection);
             default ->
                     throw new IllegalArgumentException("Unsupported geometry type: " + actualPolygon.getGeometryType());
         };
@@ -141,7 +174,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         return region;
     }
 
-    private List<Region> convertMultiPolygonToRegion(MultiPolygon multiPolygon) {
+    private List<Region> convertGeometryCollectionToRegion(GeometryCollection multiPolygon) {
         List<Region> overlappingRegions = new ArrayList<>();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             if (multiPolygon.getGeometryN(i) instanceof Polygon poly) {
