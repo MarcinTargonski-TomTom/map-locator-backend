@@ -26,30 +26,30 @@ public class UserSearchPlacesIT extends BaseE2ETest {
 
         //when register account
         given()
-            .contentType(ContentType.JSON)
+                .contentType(ContentType.JSON)
                 .body(Map.of(
                         "login", ACCOUNT_USERNAME,
                         "email", ACCOUNT_EMAIL,
                         "password", ACCOUNT_PASSWORD
                 ))
-        .when()
-            .post("/accounts/register")
-        .then()
-            .statusCode(HttpStatus.CREATED.value());
+                .when()
+                .post("/accounts/register")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
 
         //then can log in
         var response =
-        given()
-            .contentType(ContentType.JSON)
-            .body(Map.of(
-                    "login", ACCOUNT_USERNAME,
-                    "password", ACCOUNT_PASSWORD
-            ))
-        .when()
-            .post("/auth/login")
-        .then()
-            .statusCode(HttpStatus.OK.value())
-        .extract();
+                given()
+                        .contentType(ContentType.JSON)
+                        .body(Map.of(
+                                "login", ACCOUNT_USERNAME,
+                                "password", ACCOUNT_PASSWORD
+                        ))
+                        .when()
+                        .post("/auth/login")
+                        .then()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract();
 
         //and
         var authToken = response.body().jsonPath().getString("auth");
