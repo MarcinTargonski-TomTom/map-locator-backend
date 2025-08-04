@@ -2,6 +2,7 @@ package com.tomtom.locator.map.map_locator.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -25,6 +26,6 @@ import java.util.List;
 public class Region extends AbstractEntity {
     @OneToOne(cascade = CascadeType.PERSIST)
     private Point center;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Point> boundary;
 }

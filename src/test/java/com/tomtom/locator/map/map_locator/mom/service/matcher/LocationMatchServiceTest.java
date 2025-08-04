@@ -59,10 +59,10 @@ class LocationMatchServiceTest {
                 .willReturn(Optional.of(givenAccount));
 
         // When
-        underTest.addToAccount(givenLocationMatches);
+        var result = underTest.addToAccount(givenLocationMatches);
 
         // Then
-        assertThat(givenLocationMatches)
+        assertThat(result)
                 .allMatch(locationMatch -> locationMatch.getAccount().equals(givenAccount));
     }
 

@@ -14,4 +14,5 @@ public class ExceptionMessage {
     public static final String MALFORMED_JSON = "Malformed JSON request or missing body";
     public static final String EXTERNAL_SERVICE_CLIENT_ERROR = "Couldn't fetch required data from external service";
     public static final String EXTERNAL_SERVICE_SERVER_ERROR = "Couldn't fetch required data from external service";
+    public static final String ACCESS_DENIED = "You do not have permission to access this resource";
 }

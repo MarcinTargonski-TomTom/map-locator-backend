@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public class UserSearchPlacesTest extends BaseE2ETest {
+public class UserSearchPlacesIT extends BaseE2ETest {
+
     @Test
     public void userShouldBeAbleToFindPlaces() {
         //expect to not allow to search when not authenticated
@@ -22,12 +25,11 @@ public class UserSearchPlacesTest extends BaseE2ETest {
         .when()
             .post("/locations/v1/matchLocation")
         .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());//FIXME - should be 401 rather than 403
-//            .statusCode(HttpStatus.UNAUTHORIZED.value());
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
 
         //when register account
         given()
-            .contentType(ContentType.JSON)
+                .contentType(ContentType.JSON)
                 .body(Map.of(
                         "login", ACCOUNT_USERNAME,
                         "email", ACCOUNT_EMAIL,
@@ -66,7 +68,7 @@ public class UserSearchPlacesTest extends BaseE2ETest {
         .then()
             .statusCode(HttpStatus.OK.value());
 
-        //and expect to get historical location matches
+        //expect to get history of searches
         given()
             .contentType(ContentType.JSON)
             .header("Authorization", "Bearer " + authToken)
@@ -74,7 +76,12 @@ public class UserSearchPlacesTest extends BaseE2ETest {
             .get("/locations/v1/accountLocations")
         .then()
             .statusCode(HttpStatus.OK.value())
-            .body("size()", org.hamcrest.Matchers.greaterThan(0));
+            .body("size()", greaterThanOrEqualTo(1))
+            .body("[0].requestRegions[0].pointOfInterest.name", equalTo("Central Park"))
+            .body("[0].requestRegions[0].pointOfInterest.value", equalTo(100))
+            .body("[0].requestRegions[0].pointOfInterest.travelMode", equalTo("CAR"))
+            .body("[0].requestRegions[0].pointOfInterest.budgetType", equalTo("DISTANCE"));
+
     }
 
     @BeforeAll
@@ -88,54 +95,16 @@ public class UserSearchPlacesTest extends BaseE2ETest {
     private static final String ACCOUNT_PASSWORD = "password";
     private static final String EXAMPLE_POI_LIST_JSON = """
             [
-              {
-                "value": 1200,
-                "budgetType": "DISTANCE",
-                "travelMode": "CAR",
-                "center": {
-                  "latitude": 51.77898167145611,
-                  "longitude": 19.480903494554923
+                {
+                  "name": "Central Park",
+                  "center": {
+                    "latitude": 40.785091,
+                    "longitude": -73.968285
+                  },
+                  "value": 100,
+                  "budgetType": "DISTANCE",
+                  "travelMode": "CAR"
                 }
-              },
-              {
-                "value": 1200,
-                "budgetType": "DISTANCE",
-                "travelMode": "CAR",
-                "center": {
-                  "latitude": 51.77691661006759,
-                  "longitude": 19.455535847660116
-                }
-              }
             ]
             """;
-//    private static final String EXAMPLE_POI_LIST_JSON = """
-//            [
-//                {
-//                  "name": "Central Park",
-//                  "center": {
-//                    "latitude": 40.785091,
-//                    "longitude": -73.968285
-//                  },
-//                  "value": 100,
-//                  "budgetType": "DISTANCE",
-//                  "travelMode": "CAR"
-//                },
-//                {
-//                  "name": "North Hudson Park",
-//                  "center": {
-//                    "latitude": 40.80083,
-//                    "longitude": -73.99738
-//                  },
-//                  "value": 10,
-//                  "budgetType": "DISTANCE",
-//                  "travelMode": "CAR"
-//                },
-//                {
-//                  "name": "George Washington Bridge",
-//                  "value": 20,
-//                  "budgetType": "DISTANCE",
-//                  "travelMode": "CAR"
-//                }
-//            ]
-//            """;
 }

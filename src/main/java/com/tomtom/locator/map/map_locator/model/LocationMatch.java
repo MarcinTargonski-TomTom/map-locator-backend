@@ -2,6 +2,7 @@ package com.tomtom.locator.map.map_locator.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -25,7 +26,7 @@ import java.util.Map;
 @Getter
 public class LocationMatch extends AbstractEntity {
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Map<PointOfInterest, Region> requestRegions;
 
     @OneToOne(cascade = CascadeType.PERSIST)

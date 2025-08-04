@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface LocationMatchService {
 
-    void addToAccount(List<LocationMatch> locationMatches);
+    List<LocationMatch> addToAccount(List<LocationMatch> locationMatches);
 
     List<LocationMatch> getAccountLocations();
 }
