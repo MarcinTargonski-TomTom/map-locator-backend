@@ -7,7 +7,7 @@ import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository
 import com.tomtom.locator.map.map_locator.mom.repository.PointOfInterestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -27,27 +27,13 @@ class LocationMatchServiceImpl implements LocationMatchService {
     private final LocationMatchRepository locationMatchRepository;
     private final PointOfInterestRepository pointOfInterestRepository;
 
+    @Async
     @Override
-    public List<LocationMatch> addToAccount(List<LocationMatch> locationMatches) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public CompletableFuture<List<LocationMatch>> addToAccount(String login, List<LocationMatch> locationMatches) {
+        Account account = accountRepository.findByLogin(login)
+                .orElseThrow();
 
-            String login = authentication.getName();
-            List<LocationMatch> accountLocationMatches = accountRepository
-                    .findByLogin(login)
-                    .map(addLocationMatchesToAccount(locationMatches))
-                    .orElse(List.of());
-
-            return locationMatchRepository.saveAllAndFlush(accountLocationMatches);
-
-        } catch (DataAccessException e) {
-            log.error("Couldn't save location matches for account", e);
-            return locationMatches;
-        }
-    }
-
-    private Function<Account, List<LocationMatch>> addLocationMatchesToAccount(List<LocationMatch> locationMatches) {
-        return account -> locationMatches
+        List<LocationMatch> accountLocationMatches = locationMatches
                 .stream()
                 .map(locationMatch -> {
                     locationMatch.setAccount(account);
@@ -55,6 +41,9 @@ class LocationMatchServiceImpl implements LocationMatchService {
                     return locationMatch;
                 })
                 .toList();
+
+        List<LocationMatch> saved = locationMatchRepository.saveAllAndFlush(accountLocationMatches);
+        return CompletableFuture.completedFuture(saved);
     }
 
     @Override
@@ -62,6 +51,6 @@ class LocationMatchServiceImpl implements LocationMatchService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String login = authentication.getName();
-        return locationMatchRepository.findAllByAccount(login);
+        return locationMatchRepository.findAllByAccount_login(login);
     }
 }
