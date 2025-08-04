@@ -41,8 +41,8 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @GetMapping(path = "/accountLocations", produces = APPLICATION_JSON_VALUE)
-    public List<LocationMatchDTO> getAccountLocations() {
-        List<LocationMatch> accountLocations = locationMatchService.getAccountLocations();
+    public List<LocationMatchDTO> getAccountLocations(Authentication authentication) {
+        List<LocationMatch> accountLocations = locationMatchService.getAccountLocations(authentication.getName());
         return locationMatchMapper.toDTO(accountLocations);
     }
 }

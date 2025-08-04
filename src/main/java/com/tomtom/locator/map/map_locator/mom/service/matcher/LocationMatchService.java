@@ -11,5 +11,5 @@ public interface LocationMatchService {
     @Async
     CompletableFuture<List<LocationMatch>> addToAccount(String login, List<LocationMatch> locationMatches);
 
-    List<LocationMatch> getAccountLocations();
+    List<LocationMatch> getAccountLocations(String login);
 }

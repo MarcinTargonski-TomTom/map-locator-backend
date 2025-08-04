@@ -11,5 +11,5 @@ public interface PlaceMatcherController {
 
     List<LocationMatchDTO> matchLocations(List<PointOfInterestDTO> points, Authentication authentication);
 
-    List<LocationMatchDTO> getAccountLocations();
+    List<LocationMatchDTO> getAccountLocations(Authentication authentication);
 }
