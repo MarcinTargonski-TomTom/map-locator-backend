@@ -9,4 +9,6 @@ import java.util.List;
 public interface PlaceMatcherController {
 
     List<LocationMatchDTO> matchLocations(List<PointOfInterestDTO> points);
+
+    List<LocationMatchDTO> getAccountLocations();
 }

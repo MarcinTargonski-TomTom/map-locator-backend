@@ -62,8 +62,8 @@ class LocationMatchServiceTest {
         underTest.addToAccount(givenLocationMatches);
 
         // Then
-        assertThat(givenAccount.getLocationMatches())
-                .isEqualTo(givenLocationMatches);
+        assertThat(givenLocationMatches)
+                .allMatch(locationMatch -> locationMatch.getAccount().equals(givenAccount));
     }
 
     @DisplayName("Should not throw when account does not exist")

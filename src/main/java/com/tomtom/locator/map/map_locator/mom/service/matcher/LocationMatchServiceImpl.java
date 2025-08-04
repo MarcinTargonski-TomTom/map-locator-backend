@@ -25,10 +25,18 @@ class LocationMatchServiceImpl implements LocationMatchService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String login = authentication.getName();
-
         accountRepository.findByLogin(login)
-                .ifPresent(account -> {
-                    account.addLocationMatches(locationMatches);
-                });
+                        .ifPresent(account -> {
+                            locationMatches.forEach(lm -> lm.setAccount(account));
+                            locationMatchRepository.saveAllAndFlush(locationMatches);
+                        });
+    }
+
+    @Override
+    public List<LocationMatch> getAccountLocations() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String login = authentication.getName();
+        return locationMatchRepository.findAllByAccount(login);
     }
 }

@@ -65,6 +65,16 @@ public class UserSearchPlacesTest extends BaseE2ETest {
             .post("/locations/v1/matchLocation")
         .then()
             .statusCode(HttpStatus.OK.value());
+
+        //and expect to get historical location matches
+        given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + authToken)
+        .when()
+            .get("/locations/v1/accountLocations")
+        .then()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", org.hamcrest.Matchers.greaterThan(0));
     }
 
     @BeforeAll
@@ -78,16 +88,54 @@ public class UserSearchPlacesTest extends BaseE2ETest {
     private static final String ACCOUNT_PASSWORD = "password";
     private static final String EXAMPLE_POI_LIST_JSON = """
             [
-                {
-                  "name": "Central Park",
-                  "center": {
-                    "latitude": 40.785091,
-                    "longitude": -73.968285
-                  },
-                  "value": 100,
-                  "budgetType": "DISTANCE",
-                  "travelMode": "CAR"
+              {
+                "value": 1200,
+                "budgetType": "DISTANCE",
+                "travelMode": "CAR",
+                "center": {
+                  "latitude": 51.77898167145611,
+                  "longitude": 19.480903494554923
                 }
+              },
+              {
+                "value": 1200,
+                "budgetType": "DISTANCE",
+                "travelMode": "CAR",
+                "center": {
+                  "latitude": 51.77691661006759,
+                  "longitude": 19.455535847660116
+                }
+              }
             ]
             """;
+//    private static final String EXAMPLE_POI_LIST_JSON = """
+//            [
+//                {
+//                  "name": "Central Park",
+//                  "center": {
+//                    "latitude": 40.785091,
+//                    "longitude": -73.968285
+//                  },
+//                  "value": 100,
+//                  "budgetType": "DISTANCE",
+//                  "travelMode": "CAR"
+//                },
+//                {
+//                  "name": "North Hudson Park",
+//                  "center": {
+//                    "latitude": 40.80083,
+//                    "longitude": -73.99738
+//                  },
+//                  "value": 10,
+//                  "budgetType": "DISTANCE",
+//                  "travelMode": "CAR"
+//                },
+//                {
+//                  "name": "George Washington Bridge",
+//                  "value": 20,
+//                  "budgetType": "DISTANCE",
+//                  "travelMode": "CAR"
+//                }
+//            ]
+//            """;
 }

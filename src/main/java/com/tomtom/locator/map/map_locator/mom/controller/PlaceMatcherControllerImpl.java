@@ -9,6 +9,7 @@ import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.LocationMatchService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.PlaceMatcherService;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +36,12 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
         List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
         locationMatchService.addToAccount(regionForPlaces);
         return locationMatchMapper.toDTO(regionForPlaces);
+    }
+
+    @Override
+    @GetMapping(path = "/accountLocations", produces = APPLICATION_JSON_VALUE)
+    public List<LocationMatchDTO> getAccountLocations() {
+        List<LocationMatch> accountLocations = locationMatchService.getAccountLocations();
+        return locationMatchMapper.toDTO(accountLocations);
     }
 }

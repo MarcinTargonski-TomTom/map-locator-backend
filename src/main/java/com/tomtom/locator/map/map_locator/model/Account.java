@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,10 +16,8 @@ import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,16 +51,8 @@ public class Account extends AbstractEntity implements UserDetails {
     @ToString.Include
     private AccountState state;
 
-    @OneToMany
-    @Getter
-    private List<LocationMatch> locationMatches;
-
     public static Account withEmailAndCredentials(@NonNull String email, @NonNull Credentials credentials) {
-        return new Account(false, credentials.login(), email, credentials.password(), EnumSet.of(AccountRole.TENANT), AccountState.NOT_VERIFIED, new ArrayList<>());
-    }
-
-    public void addLocationMatches(@NonNull List<LocationMatch> locationMatches) {
-        this.locationMatches.addAll(locationMatches);
+        return new Account(false, credentials.login(), email, credentials.password(), EnumSet.of(AccountRole.TENANT), AccountState.NOT_VERIFIED);
     }
 
     @Override
