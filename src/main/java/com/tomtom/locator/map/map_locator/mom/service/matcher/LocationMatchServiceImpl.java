@@ -42,7 +42,7 @@ class LocationMatchServiceImpl implements LocationMatchService {
 
         } catch (DataAccessException e) {
             log.error("Couldn't save location matches for account", e);
-            return List.of();
+            return locationMatches;
         }
     }
 
