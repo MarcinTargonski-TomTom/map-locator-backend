@@ -94,7 +94,7 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                     continue;
                 }
 
-                for (SearchApiResult searchResult : searchResponse.getResults()) {
+                searchResponse.getResults().forEach(searchResult -> {
                     PointOfInterest foundPoi = pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName);
 
                     Region foundRegion = mapService.getRegionForPoint(foundPoi).getReachableRange();
@@ -107,11 +107,11 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
                     List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
 
-                    for (Region newOverlappingRegion : newOverlappingRegions) {
+                    newOverlappingRegions.forEach(newOverlappingRegion -> {
                         LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
                         allMatches.add(locationMatch);
-                    }
-                }
+                    });
+                });
             }
         }
 
