@@ -8,11 +8,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public class UserSearchPlacesIT extends BaseE2ETest {
+
     @Test
     public void userShouldBeAbleToFindPlaces() {
         //expect to not allow to search when not authenticated
@@ -32,24 +37,24 @@ public class UserSearchPlacesIT extends BaseE2ETest {
                         "email", ACCOUNT_EMAIL,
                         "password", ACCOUNT_PASSWORD
                 ))
-                .when()
-                .post("/accounts/register")
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
+        .when()
+            .post("/accounts/register")
+        .then()
+            .statusCode(HttpStatus.CREATED.value());
 
         //then can log in
         var response =
-                given()
-                        .contentType(ContentType.JSON)
-                        .body(Map.of(
-                                "login", ACCOUNT_USERNAME,
-                                "password", ACCOUNT_PASSWORD
-                        ))
-                        .when()
-                        .post("/auth/login")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract();
+        given()
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                    "login", ACCOUNT_USERNAME,
+                    "password", ACCOUNT_PASSWORD
+            ))
+        .when()
+            .post("/auth/login")
+        .then()
+            .statusCode(HttpStatus.OK.value())
+        .extract();
 
         //and
         var authToken = response.body().jsonPath().getString("auth");
@@ -64,6 +69,21 @@ public class UserSearchPlacesIT extends BaseE2ETest {
             .post("/locations/v1/matchLocation")
         .then()
             .statusCode(HttpStatus.OK.value());
+
+        //expect to get history of searches after w8 for async processing
+        await().atMost(Duration.ofSeconds(3)).untilAsserted(() ->
+            given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + authToken)
+                    .when()
+                    .get("/locations/v1/accountLocations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", greaterThanOrEqualTo(1))
+                    .body("[0].requestRegions[0].pointOfInterest.name", equalTo("Central Park"))
+                    .body("[0].requestRegions[0].pointOfInterest.value", equalTo(100))
+                    .body("[0].requestRegions[0].pointOfInterest.travelMode", equalTo("CAR"))
+                    .body("[0].requestRegions[0].pointOfInterest.budgetType", equalTo("DISTANCE")));
     }
 
     @BeforeAll

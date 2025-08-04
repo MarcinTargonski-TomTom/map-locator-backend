@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -20,7 +21,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = false)
 @Getter
 public class PointOfInterest extends AbstractEntity {
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @Setter
     Point center;
     BudgetType budgetType;
