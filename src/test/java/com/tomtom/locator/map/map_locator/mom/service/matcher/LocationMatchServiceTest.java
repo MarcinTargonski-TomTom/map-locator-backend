@@ -4,6 +4,7 @@ import com.tomtom.locator.map.map_locator.model.Account;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
 import com.tomtom.locator.map.map_locator.mok.repository.AccountRepository;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
+import com.tomtom.locator.map.map_locator.mom.repository.PointOfInterestRepository;
 import com.tomtom.locator.map.map_locator.security.model.Credentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,9 @@ class LocationMatchServiceTest {
 
     @Mock
     private LocationMatchRepository locationMatchRepository;
+
+    @Mock
+    private PointOfInterestRepository pointOfInterestRepository;
 
     @Mock
     private Authentication authentication;
