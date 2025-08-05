@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="Marcin Targoński" runAlways="true">
+
+        <insert tableName="accounts">
+            <column name="id" value="00000000-0000-0000-0000-000000000001"/>
+            <column name="version" valueNumeric="0"/>
+            <column name="archived" valueBoolean="false"/>
+            <column name="login" value="THanks"/>
+            <column name="email" value="thanks@example.com"/>
+            <column name="password" value="$2a$10$x3ILvFM8tJEPn1zdk87N0uhn8R1/mSiMRkbFe6IRRVikY42NDgT.m"/>
+            <column name="state" value="ACTIVE"/>
+            <column name="roles" value="{TENANT}"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
