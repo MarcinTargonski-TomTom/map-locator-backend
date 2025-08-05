@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface LocationMatchService {
 
+    void updateHeatMap(List<LocationMatch> locationMatches);
     @Async
     CompletableFuture<List<LocationMatch>> addToAccount(String login, List<LocationMatch> locationMatches);
 
