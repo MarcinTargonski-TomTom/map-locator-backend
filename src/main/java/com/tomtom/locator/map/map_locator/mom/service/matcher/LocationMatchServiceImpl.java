@@ -35,7 +35,6 @@ class LocationMatchServiceImpl implements LocationMatchService {
                 .stream()
                 .map(locationMatch -> {
                     locationMatch.setAccount(account);
-                    locationMatch.getRequestRegions().keySet().forEach(pointOfInterestRepository::save);
                     return locationMatch;
                 })
                 .toList();

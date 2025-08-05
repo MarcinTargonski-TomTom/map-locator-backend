@@ -16,6 +16,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Entity
 @Table(name = "location_matches")
@@ -26,8 +30,8 @@ import java.util.Map;
 @Getter
 public class LocationMatch extends AbstractEntity {
 
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private Map<PointOfInterest, Region> requestRegions;
+    @OneToMany(mappedBy = "locationMatch", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private Set<LocationMatchRequestRegion> requestRegions;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     private Region responseRegion;
@@ -37,7 +41,25 @@ public class LocationMatch extends AbstractEntity {
     private Account account;
 
     public LocationMatch(Map<PointOfInterest, Region> requestRegions, Region responseRegion) {
-        this.requestRegions = requestRegions;
         this.responseRegion = responseRegion;
+        this.requestRegions = requestRegions
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    LocationMatchRequestRegion reqRegion = new LocationMatchRequestRegion();
+                    reqRegion.setLocationMatch(this);
+                    reqRegion.setPointOfInterest(entry.getKey());
+                    reqRegion.setRegion(entry.getValue());
+                    return reqRegion;
+                })
+                .collect(toSet());
+    }
+
+    public Map<PointOfInterest, Region> getRequestRegions() {
+        return requestRegions.stream()
+                .collect(toMap(
+                        LocationMatchRequestRegion::getPointOfInterest,
+                        LocationMatchRequestRegion::getRegion
+                ));
     }
 }

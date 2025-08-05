@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="1" author="Marcin Targoński">
+    <changeSet id="1" author="Marcin Targoński" runAlways="true">
 
         <insert tableName="accounts">
             <column name="id" value="00000000-0000-0000-0000-000000000001"/>
@@ -12,7 +12,7 @@
             <column name="archived" valueBoolean="false"/>
             <column name="login" value="THanks"/>
             <column name="email" value="thanks@example.com"/>
-            <column name="password" value="$2a$10$x3ILvFM8tJEPn1zdk87N0uhn8R1/mSiMRkbFe6IRRVikY42NDgT.m"/>
+            <column name="password" value="$2a$10$x3ILvFM8tJEPn1zdk87N0uhn8R1/mSiMRkbFe6IRRVikY42NDgT.m"/> <!--P@ssw0rd!-->
             <column name="state" value="ACTIVE"/>
             <column name="roles" value="{TENANT}"/>
         </insert>
