@@ -104,6 +104,9 @@ class AuthServiceImplTest {
         given(jwtHelper.generateAuthTokenForAnAccount(any()))
                 .willReturn("token");
 
+        given(jwtHelper.generateRefreshTokenForAnAccount(any()))
+                .willReturn("token");
+
         // When
         var result = underTest.authenticate(CORRECT_CREDENTIALS);
 

@@ -42,7 +42,8 @@ class AuthServiceImpl implements AuthService {
         }
 
         String authToken = jwtHelper.generateAuthTokenForAnAccount(account);
-        return new Tokens(authToken);
+        String refreshToken = jwtHelper.generateRefreshTokenForAnAccount(account);
+        return new Tokens(authToken, refreshToken);
     }
 
     @Override
