@@ -9,5 +9,7 @@ public interface AuthService {
 
     Tokens authenticate(@NonNull Credentials credentials);
 
+    Tokens extendSession(@NonNull String login, @NonNull String refreshToken);
+
     Account findByLogin(@NonNull String login);
 }

@@ -5,6 +5,7 @@ import com.tomtom.locator.map.map_locator.exception.InvalidCredentialsException;
 import com.tomtom.locator.map.map_locator.model.Account;
 import com.tomtom.locator.map.map_locator.security.jwt.JwtHelper;
 import com.tomtom.locator.map.map_locator.security.model.Credentials;
+import com.tomtom.locator.map.map_locator.security.model.Tokens;
 import com.tomtom.locator.map.map_locator.security.repository.AuthRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,5 +114,61 @@ class AuthServiceImplTest {
         // Then
         assertThat(result)
                 .isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should throw if login from refresh token does not match login")
+    void extendSessionShouldThrow() {
+        // Given
+        var givenAccount = Account.withEmailAndCredentials("example@example.com", CORRECT_CREDENTIALS);
+        givenAccount.activate();
+
+        given(jwtHelper.extractSubject(anyString()))
+                .willReturn("john123");
+
+        // When + Then
+        assertThatThrownBy(() -> underTest.extendSession("login", "refreshToken"))
+                .isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should throw if account can't be found")
+    void extendSessionShouldThrow2() {
+        // Given
+        given(jwtHelper.extractSubject(anyString()))
+                .willReturn("john123");
+
+        given(authRepository.findByLogin(anyString()))
+                .willReturn(Optional.empty());
+
+        // When + Then
+        assertThatThrownBy(() -> underTest.extendSession("john123", "refreshToken"))
+                .isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should return new auth token if everything is correct")
+    void extendSessionSuccess() {
+        // Given
+        var givenAccount = Account.withEmailAndCredentials("example@example.com", CORRECT_CREDENTIALS);
+        givenAccount.activate();
+
+        given(jwtHelper.extractSubject(anyString()))
+                .willReturn(CORRECT_CREDENTIALS.login());
+
+        given(authRepository.findByLogin(anyString()))
+                .willReturn(Optional.of(givenAccount));
+
+        given(jwtHelper.generateAuthTokenForAnAccount(any()))
+                .willReturn("newAuthToken");
+
+        // When
+        var result = underTest.extendSession(CORRECT_CREDENTIALS.login(), "refreshToken");
+
+        // Then
+        assertThat(result)
+                .isNotNull()
+                .extracting(Tokens::auth)
+                .isEqualTo("newAuthToken");
     }
 }

@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.security.service;
 
+import com.tomtom.locator.map.map_locator.exception.InvalidTokenException;
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.Account;
 import com.tomtom.locator.map.map_locator.exception.AccountNotActiveException;
@@ -44,6 +45,22 @@ class AuthServiceImpl implements AuthService {
         String authToken = jwtHelper.generateAuthTokenForAnAccount(account);
         String refreshToken = jwtHelper.generateRefreshTokenForAnAccount(account);
         return new Tokens(authToken, refreshToken);
+    }
+
+    @Override
+    public Tokens extendSession(@NonNull String login, @NonNull String refreshToken) {
+        String loginFromRefreshToken = jwtHelper.extractSubject(refreshToken);
+
+        if (!login.equals(loginFromRefreshToken)) {
+            throw InvalidTokenException.withDefaultMsg();
+        }
+
+        Account account = authRepository.findByLogin(login)
+                .orElseThrow(AccountNotActiveException::withDefaultMsg);
+
+        String newAuthToken = jwtHelper.generateAuthTokenForAnAccount(account);
+
+        return new Tokens(newAuthToken, refreshToken);
     }
 
     @Override
