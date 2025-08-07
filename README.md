@@ -36,8 +36,11 @@ The application utilizes the following APIs provided by TomTom:
 2. **Start the application**:
    In the project's root directory, run the following command:
    ```bash
+    sudo apt-get update
+    sudo apt-get install docker-model-plugin
+    docker model pull ai/llama3.2:3B-Q4_0 
+   
    docker-compose up
-   mvn spring-boot:run
    ```
    This command will start both the database and the Spring Boot application.
 
