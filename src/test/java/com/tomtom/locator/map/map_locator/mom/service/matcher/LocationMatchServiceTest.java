@@ -2,8 +2,10 @@ package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.model.Account;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
+import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mok.repository.AccountRepository;
 import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
+import com.tomtom.locator.map.map_locator.mom.repository.MortonTileMatcherRepository;
 import com.tomtom.locator.map.map_locator.mom.repository.PointOfInterestRepository;
 import com.tomtom.locator.map.map_locator.security.model.Credentials;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -39,6 +42,9 @@ class LocationMatchServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private MortonTileMatcherRepository mortonTileMatcherRepository;
+
     @InjectMocks
     private LocationMatchServiceImpl underTest;
 
@@ -47,11 +53,19 @@ class LocationMatchServiceTest {
     void addToAccount() throws ExecutionException, InterruptedException {
         // Given
         var givenLocationMatch = mock(LocationMatch.class);
+        var givenRegion = mock(Region.class);
         var givenLocationMatches = List.of(givenLocationMatch);
         var givenAccount = Account.withEmailAndCredentials("email", new Credentials("login", "password"));
 
+        given(givenLocationMatch.getResponseRegion()).willReturn(givenRegion);
+        given(givenRegion.getBoundary()).willReturn(List.of());
+        given(givenLocationMatch.getAccount()).willReturn(givenAccount);
+
         given(accountRepository.findByLogin(any()))
                 .willReturn(Optional.of(givenAccount));
+        given(locationMatchRepository.saveAllAndFlush(anyList()))
+                .willAnswer(invocation -> invocation.getArgument(0));
+        given(mortonTileMatcherRepository.findAll()).willReturn(List.of());
 
         // When
         var result = underTest.addToAccount(givenAccount.getUsername(), givenLocationMatches).get();
@@ -66,7 +80,13 @@ class LocationMatchServiceTest {
     void shouldFailToAddToAccount() {
         // Given
         var givenLocationMatch = mock(LocationMatch.class);
+        var givenRegion = mock(Region.class);
         var givenLocationMatches = List.of(givenLocationMatch);
+
+        given(givenLocationMatch.getResponseRegion()).willReturn(givenRegion);
+        given(givenRegion.getBoundary()).willReturn(List.of());
+        given(mortonTileMatcherRepository.findAll()).willReturn(List.of());
+
         given(accountRepository.findByLogin(any()))
                 .willReturn(Optional.empty());
 
