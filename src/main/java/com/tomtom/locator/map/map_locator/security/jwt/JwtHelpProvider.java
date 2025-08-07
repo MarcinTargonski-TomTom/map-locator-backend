@@ -11,7 +11,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -24,10 +23,15 @@ import java.util.Map;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 class JwtHelpProvider implements JwtHelper {
 
     private final JwtProperties authTokenProps;
+    private final JwtProperties refreshTokenProps;
+
+    public JwtHelpProvider(@NonNull TokensProperties tokensProperties) {
+        this.authTokenProps = tokensProperties.authToken();
+        this.refreshTokenProps = tokensProperties.refreshToken();
+    }
 
     @Override
     public String generateAuthTokenForAnAccount(@NonNull Account account) {
@@ -41,10 +45,19 @@ class JwtHelpProvider implements JwtHelper {
     }
 
     @Override
+    public String generateRefreshTokenForAnAccount(@NonNull Account account) {
+        String subject = account.getUsername();
+        Instant issuedAt = Instant.now();
+        Instant expirationAt = Instant.now().plusMillis(refreshTokenProps.timeoutInMillis());
+        Key key = getSigningKeyFromBase64EncodedSecret();
+
+        return generateToken(subject, Map.of(), issuedAt, expirationAt, key, SignatureAlgorithm.HS256);
+    }
+
+    @Override
     public String extractSubject(@NonNull String token) {
         return validateAndExtractClaimsFromJwtToken(token).getSubject();
     }
-
 
     private String generateToken(String subject, Map<String, Object> claims, Instant issuedAt, Instant expirationAt, Key key, SignatureAlgorithm alg) {
         return Jwts.builder()

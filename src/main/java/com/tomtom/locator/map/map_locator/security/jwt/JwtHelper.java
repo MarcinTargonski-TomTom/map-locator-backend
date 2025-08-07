@@ -5,7 +5,9 @@ import lombok.NonNull;
 
 public interface JwtHelper {
 
-    String generateAuthTokenForAnAccount(Account account);
+    String generateAuthTokenForAnAccount(@NonNull Account account);
+
+    String generateRefreshTokenForAnAccount(@NonNull Account account);
 
     String extractSubject(@NonNull String token);
 }
