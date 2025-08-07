@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="targonskim (generated)" id="1754569906862-8">
+    <changeSet author="targonskim (generated)" id="1754569906862-8" runAlways="true">
         <insert tableName="points">
             <column name="latitude" valueNumeric="51.76712477748979"/>
             <column name="longitude" valueNumeric="19.462963353000806"/>
@@ -16052,7 +16052,7 @@
             <column name="id" value="1e6e298d-42ec-497f-9bb9-0144a9835caa"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-5">
+    <changeSet author="targonskim (generated)" id="1754569906862-5" runAlways="true">
         <insert tableName="regions">
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="4bcbbb09-b41c-4d52-9be2-40e66d7f74dd"/>
@@ -16349,7 +16349,7 @@
             <column name="id" value="a1c36a49-78dd-49f7-90a3-2d2a24040e35"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-2">
+    <changeSet author="targonskim (generated)" id="1754569906862-2" runAlways="true">
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
             <column name="travel_mode" valueNumeric="0"/>
@@ -16648,7 +16648,7 @@
             <column name="name" value="La Beaute Clinique Boat"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-3">
+    <changeSet author="targonskim (generated)" id="1754569906862-3" runAlways="true">
         <insert tableName="location_matches">
             <column name="version" valueNumeric="0"/>
             <column name="account_id" value="00000000-0000-0000-0000-000000000001"/>
@@ -16806,7 +16806,7 @@
             <column name="response_region_id" value="fcd34e9e-80f3-4486-b8d5-74e8d5772d08"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-4">
+    <changeSet author="targonskim (generated)" id="1754569906862-4" runAlways="true">
         <insert tableName="regions_boundary">
             <column name="boundary_id" value="ec9eb5bd-59fd-4a09-883a-b3dbdf1d60b8"/>
             <column name="region_id" value="6805afb6-26ed-4655-a07f-fe0b57d9eed5"/>
@@ -27152,7 +27152,7 @@
             <column name="region_id" value="a1c36a49-78dd-49f7-90a3-2d2a24040e35"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-6">
+    <changeSet author="targonskim (generated)" id="1754569906862-6" runAlways="true">
         <insert tableName="location_match_request_regions">
             <column name="id" value="b2044808-92e3-4c19-a88c-3c5c25ba6285"/>
             <column name="location_match_id" value="40c93d1f-11fe-4a20-bb68-211a471f6fa7"/>
@@ -27610,7 +27610,7 @@
             <column name="region_id" value="a1c36a49-78dd-49f7-90a3-2d2a24040e35"/>
         </insert>
     </changeSet>
-    <changeSet author="targonskim (generated)" id="1754569906862-7">
+    <changeSet author="targonskim (generated)" id="1754569906862-7" runAlways="true">
         <insert tableName="morton_tile_matches">
             <column name="occurrences" valueNumeric="1"/>
             <column name="morton_code" valueNumeric="3200310331032330"/>
