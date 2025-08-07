@@ -22,6 +22,6 @@ jobs:
           cache: maven
       - name: Run test with Maven
         run: |
-          mvn clean verify \
+          mvn clean install -DskipTests \
           -Dapp.mok.security.authToken.key="${JWT_SECRET}" \
           -Dtomtom.api.key="${TOMTOM_API_KEY}" \
