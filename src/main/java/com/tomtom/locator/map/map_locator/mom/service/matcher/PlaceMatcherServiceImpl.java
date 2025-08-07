@@ -120,7 +120,10 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             }
         }
 
-        return allMatches;
+        return allMatches.stream().filter(match -> match.getResponseRegion().getCenter() != null).sorted(
+                (match1, match2) -> (int) (convertRegionToJTSPolygon(match1.getResponseRegion()).getArea() -
+                        convertRegionToJTSPolygon(match2.getResponseRegion()).getArea())
+        ).toList();
     }
 
     List<Region> getOverlappingRegions(List<Region> regions) {

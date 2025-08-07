@@ -27,6 +27,12 @@ spring:
   profiles:
     include:
       - tomtomApi
+
+  ai:
+    local:
+      url: http://localhost:12434/engines/llama.cpp/v1/chat/completions
+      model: ai/llama3.2:3B-Q4_0
+
 app:
   datasource:
     url:
