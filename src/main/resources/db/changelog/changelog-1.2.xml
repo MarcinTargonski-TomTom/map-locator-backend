@@ -16370,7 +16370,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="900"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="27d28b99-0408-422c-973d-32d466906502"/>
@@ -16415,7 +16415,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1500"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="293aa315-969c-44e5-8b63-eec20a154f55"/>
@@ -16442,7 +16442,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="169d0739-0866-43ef-b28b-2abb9511b2db"/>
@@ -16451,7 +16451,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="80674f65-168b-4fc8-9dd8-e6c6184e56d0"/>
@@ -16460,7 +16460,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="754ac34a-2d38-4695-aa88-667f4d4b881d"/>
@@ -16514,7 +16514,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="50000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="d56dea1a-d977-4159-8a30-964089c505b4"/>
@@ -16523,7 +16523,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="50000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="333c14c1-fab2-468a-a6ee-8cda69919e29"/>
@@ -16532,7 +16532,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="50000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="7eafee21-ba31-4085-a05f-7d63c30c2d68"/>
@@ -16559,7 +16559,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="7f785b7b-adda-43b4-8245-ad6ac5ceb39a"/>
@@ -16568,7 +16568,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1500"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="54e8c193-da96-43fe-92aa-454a2f613eb2"/>
@@ -16577,7 +16577,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1500"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="719d9c13-e858-45a0-8d24-bae20db0cc9c"/>
@@ -16586,7 +16586,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1500"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="5dec24ac-857a-4e79-934f-8d8f1b87445c"/>
@@ -16595,7 +16595,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="3dee441d-6f3f-4a7c-b36d-a67a0983832b"/>
@@ -16604,7 +16604,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="6f553b9b-a94c-4e1b-a9f0-a4ad088eead3"/>
@@ -16613,7 +16613,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="a58ae08a-a0a7-444c-8d43-c5bfde9ecbf8"/>
@@ -16622,7 +16622,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="3000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="02455990-6106-4a84-a1fa-7d47a535668b"/>
@@ -16631,7 +16631,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="3000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="ee17d26a-4d1c-41cf-9ecf-8bf746c3eed8"/>
@@ -16640,7 +16640,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="0"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="3000"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="805db665-2ae9-4c8c-a8ef-a40137ddb156"/>
