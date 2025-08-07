@@ -2,10 +2,12 @@ package com.tomtom.locator.map.map_locator.mom.controller;
 
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
+import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.mom.dto.LocationMatchDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.LocationMatchMapper;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
+import com.tomtom.locator.map.map_locator.mom.service.ai.LlmService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.LocationMatchService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.PlaceMatcherService;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @MethodCallLogged
 public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
+    private final LlmService llmService;
+
     private final PlaceMatcherService placeMatcherService;
     private final LocationMatchService locationMatchService;
     private final PointOfInterestMapper pointOfInterestMapper;
@@ -35,7 +39,12 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public List<LocationMatchDTO> matchLocations(@RequestBody List<PointOfInterestDTO> pois, Authentication authentication) {
         List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
+        regionForPlaces = regionForPlaces.stream().map(match -> {
+            match.setName(llmService.getNameForPoiNames(match.getRequestRegions().keySet().stream().map(PointOfInterest::getName).toList()));
+            return match;
+        }).toList();
         locationMatchService.addToAccount(authentication.getName(), regionForPlaces);
+
         return locationMatchMapper.toDTO(regionForPlaces);
     }
 

@@ -29,7 +29,7 @@ public class LocationMatchMapper {
     }
 
     public LocationMatchDTO toDTO(LocationMatch locationMatch) {
-        return new LocationMatchDTO(map(locationMatch.getRequestRegions()), regionMapper.toDTO(locationMatch.getResponseRegion()));
+        return new LocationMatchDTO(locationMatch.getName(), map(locationMatch.getRequestRegions()), regionMapper.toDTO(locationMatch.getResponseRegion()));
     }
 
     private List<RequestRegionDTO> map(Map<PointOfInterest, Region> map) {
