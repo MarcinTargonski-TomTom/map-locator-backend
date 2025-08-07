@@ -7,7 +7,7 @@ import com.tomtom.locator.map.map_locator.mom.dto.LocationMatchDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.LocationMatchMapper;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
-import com.tomtom.locator.map.map_locator.mom.service.ai.LlamaChatService;
+import com.tomtom.locator.map.map_locator.mom.service.ai.LlmService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.LocationMatchService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.PlaceMatcherService;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @MethodCallLogged
 public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
-    private final LlamaChatService llamaChatService;
+    private final LlmService llmService;
 
     private final PlaceMatcherService placeMatcherService;
     private final LocationMatchService locationMatchService;
@@ -40,7 +40,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
     public List<LocationMatchDTO> matchLocations(@RequestBody List<PointOfInterestDTO> pois, Authentication authentication) {
         List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
         regionForPlaces = regionForPlaces.stream().map(match -> {
-            match.setName(llamaChatService.getNameForPoiNames(match.getRequestRegions().keySet().stream().map(PointOfInterest::getName).toList()));
+            match.setName(llmService.getNameForPoiNames(match.getRequestRegions().keySet().stream().map(PointOfInterest::getName).toList()));
             return match;
         }).toList();
         locationMatchService.addToAccount(authentication.getName(), regionForPlaces);

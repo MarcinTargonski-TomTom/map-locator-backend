@@ -1,5 +1,6 @@
 package com.tomtom.locator.map.map_locator.mom.service.ai;
 
+import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -13,7 +14,8 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class LlamaChatServiceImpl implements LlamaChatService {
+@MethodCallLogged
+public class LlamaChatServiceImpl implements LlmService {
     private final RestTemplate restTemplate;
     private final String llamaApiUrl;
     private final String modelName;
