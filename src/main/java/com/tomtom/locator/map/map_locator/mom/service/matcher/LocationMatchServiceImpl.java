@@ -85,8 +85,12 @@ class LocationMatchServiceImpl implements LocationMatchService {
     }
 
     private void findMatchOrAddNewMortonTileMatcher(long mortonCode, Map<Long, MortonTileMatcher> matchesFromDB) {
-        MortonTileMatcher foundMatch = matchesFromDB.getOrDefault(mortonCode, new MortonTileMatcher(mortonCode, 0));
+        MortonTileMatcher foundMatch = matchesFromDB.getOrDefault(getMortonCodeAsQuaternary(mortonCode), new MortonTileMatcher(mortonCode, 0));
         foundMatch.incrementOccurrences();
         matchesFromDB.put(foundMatch.getMortonCode(), foundMatch);
+    }
+
+    private Long getMortonCodeAsQuaternary(long mortonCode) {
+        return Long.valueOf(Long.toString(mortonCode, 4));
     }
 }
