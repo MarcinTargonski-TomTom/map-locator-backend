@@ -20,6 +20,7 @@ import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.Non
 import com.tomtom.locator.map.map_locator.mom.service.tiles.MortonTileMatcherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +55,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('TENANT')")
     public List<LocationMatchDTO> matchLocations(@RequestBody MatchingRequest request, Authentication authentication) {
         switch (request.matchingSmootherType()) {
             case NONE -> placeMatcherService.setMatchingSmoother(nonSmoothingSmoother);
@@ -72,6 +74,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @GetMapping(path = "/accountLocations", produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('TENANT')")
     public List<LocationMatchDTO> getAccountLocations(Authentication authentication) {
         List<LocationMatch> accountLocations = locationMatchService.getAccountLocations(authentication.getName());
         return locationMatchMapper.toDTO(accountLocations);
@@ -79,6 +82,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @GetMapping(path = "/stats/{mortonCode}", produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PREMIUM')")
     public ResponseEntity<?> getStats(@PathVariable long mortonCode) {
         return ResponseEntity.ok(
                 mortonTileMatcherService.countOccurrencesByMortonCode(mortonCode)
@@ -87,6 +91,7 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
 
     @Override
     @PostMapping(path = "/stats", produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PREMIUM')")
     public ResponseEntity<List<StatDTO>> getStatsForPolygon(@RequestBody StatsPolygonDTO statsPolygon) {
         return ResponseEntity.ok(
                 statMapper.toDTOList(

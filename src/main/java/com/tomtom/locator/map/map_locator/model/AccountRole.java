@@ -4,7 +4,8 @@ import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 
 public enum AccountRole implements GrantedAuthority {
-    TENANT("Tenant");
+    TENANT("ROLE_TENANT"),
+    PREMIUM("ROLE_PREMIUM");
 
     private final String authority;
 
