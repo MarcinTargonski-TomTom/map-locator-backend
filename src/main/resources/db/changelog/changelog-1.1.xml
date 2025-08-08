@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet author="targonskim (generated)" id="1754567620394-8" runAlways="true">
@@ -6426,7 +6426,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="900"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="27d28b99-0408-422c-973d-32d466906502"/>
@@ -6471,7 +6471,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1500"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="293aa315-969c-44e5-8b63-eec20a154f55"/>
@@ -6498,7 +6498,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="169d0739-0866-43ef-b28b-2abb9511b2db"/>
@@ -6507,7 +6507,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="80674f65-168b-4fc8-9dd8-e6c6184e56d0"/>
@@ -6516,7 +6516,7 @@
         </insert>
         <insert tableName="points_of_interest">
             <column name="budget_type" valueNumeric="1"/>
-            <column name="travel_mode" valueNumeric="2"/>
+            <column name="travel_mode" valueNumeric="1"/>
             <column name="value" valueNumeric="1200"/>
             <column name="version" valueNumeric="0"/>
             <column name="center_id" value="754ac34a-2d38-4695-aa88-667f4d4b881d"/>
