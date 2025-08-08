@@ -1,13 +1,13 @@
 package com.tomtom.locator.map.map_locator.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -42,7 +42,7 @@ public class LocationMatch extends AbstractEntity {
     private Account account;
 
     @Setter
-    @Transient
+    @Column(nullable = false)
     private String name;
 
     public LocationMatch(Map<PointOfInterest, Region> requestRegions, Region responseRegion) {
