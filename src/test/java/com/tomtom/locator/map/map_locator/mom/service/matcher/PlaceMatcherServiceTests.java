@@ -2,9 +2,11 @@ package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.model.Point;
 import com.tomtom.locator.map.map_locator.model.Region;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.converter.DefaultConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -16,6 +18,9 @@ class PlaceMatcherServiceTests {
 
     @InjectMocks
     private PlaceMatcherServiceImpl placeMatcherService;
+
+    @Spy
+    private DefaultConverter regionConverter;
 
 
     @Test

@@ -16,86 +16,13 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public class UserSearchPlacesIT extends BaseE2ETest {
-
-    @Test
-    public void userShouldBeAbleToFindPlaces() {
-        //expect to not allow to search when not authenticated
-        given()
-            .contentType(ContentType.JSON)
-            .body(EXAMPLE_POI_LIST_JSON)
-        .when()
-            .post("/locations/v1/matchLocation")
-        .then()
-            .statusCode(HttpStatus.UNAUTHORIZED.value());
-
-        //when register account
-        given()
-                .contentType(ContentType.JSON)
-                .body(Map.of(
-                        "login", ACCOUNT_USERNAME,
-                        "email", ACCOUNT_EMAIL,
-                        "password", ACCOUNT_PASSWORD
-                ))
-        .when()
-            .post("/accounts/register")
-        .then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        //then can log in
-        var response =
-        given()
-            .contentType(ContentType.JSON)
-            .body(Map.of(
-                    "login", ACCOUNT_USERNAME,
-                    "password", ACCOUNT_PASSWORD
-            ))
-        .when()
-            .post("/auth/login")
-        .then()
-            .statusCode(HttpStatus.OK.value())
-        .extract();
-
-        //and
-        var authToken = response.body().jsonPath().getString("auth");
-        Assertions.assertNotNull(authToken);
-
-        //expect to allow search when authenticated
-        given()
-            .contentType(ContentType.JSON)
-            .header("Authorization", "Bearer " + authToken)
-            .body(EXAMPLE_POI_LIST_JSON)
-        .when()
-            .post("/locations/v1/matchLocation")
-        .then()
-            .statusCode(HttpStatus.OK.value());
-
-        //expect to get history of searches after w8 for async processing
-        await().atMost(Duration.ofSeconds(3)).untilAsserted(() ->
-            given()
-                    .contentType(ContentType.JSON)
-                    .header("Authorization", "Bearer " + authToken)
-                    .when()
-                    .get("/locations/v1/accountLocations")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("size()", greaterThanOrEqualTo(1))
-                    .body("[0].requestRegions[0].pointOfInterest.name", equalTo("Central Park"))
-                    .body("[0].requestRegions[0].pointOfInterest.value", equalTo(100))
-                    .body("[0].requestRegions[0].pointOfInterest.travelMode", equalTo("CAR"))
-                    .body("[0].requestRegions[0].pointOfInterest.budgetType", equalTo("DISTANCE")));
-    }
-
-    @BeforeAll
-    void setup() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-    }
+class UserSearchPlacesIT extends BaseE2ETest {
 
     private static final String ACCOUNT_USERNAME = "john_doe";
     private static final String ACCOUNT_EMAIL = "john.doe@example.com";
     private static final String ACCOUNT_PASSWORD = "password";
-    private static final String EXAMPLE_POI_LIST_JSON = """
+    private static final String EXAMPLE_REQUEST = """
+            {"pois":
             [
                 {
                   "name": "Central Park",
@@ -107,6 +34,82 @@ public class UserSearchPlacesIT extends BaseE2ETest {
                   "budgetType": "DISTANCE",
                   "travelMode": "CAR"
                 }
-            ]
+            ],
+            "matchingSmootherType": "NONE"
+            }
             """;
+
+    @Test
+    void userShouldBeAbleToFindPlaces() {
+        //expect to not allow to search when not authenticated
+        given()
+                .contentType(ContentType.JSON)
+                .body(EXAMPLE_REQUEST)
+                .when()
+                .post("/locations/v1/matchLocation")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+
+        //when register account
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "login", ACCOUNT_USERNAME,
+                        "email", ACCOUNT_EMAIL,
+                        "password", ACCOUNT_PASSWORD
+                ))
+                .when()
+                .post("/accounts/register")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        //then can log in
+        var response =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body(Map.of(
+                                "login", ACCOUNT_USERNAME,
+                                "password", ACCOUNT_PASSWORD
+                        ))
+                        .when()
+                        .post("/auth/login")
+                        .then()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract();
+
+        //and
+        var authToken = response.body().jsonPath().getString("auth");
+        Assertions.assertNotNull(authToken);
+
+        //expect to allow search when authenticated
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + authToken)
+                .body(EXAMPLE_REQUEST)
+                .when()
+                .post("/locations/v1/matchLocation")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        //expect to get history of searches after w8 for async processing
+        await().atMost(Duration.ofSeconds(3)).untilAsserted(() ->
+                given()
+                        .contentType(ContentType.JSON)
+                        .header("Authorization", "Bearer " + authToken)
+                        .when()
+                        .get("/locations/v1/accountLocations")
+                        .then()
+                        .statusCode(HttpStatus.OK.value())
+                        .body("size()", greaterThanOrEqualTo(1))
+                        .body("[0].requestRegions[0].pointOfInterest.name", equalTo("Central Park"))
+                        .body("[0].requestRegions[0].pointOfInterest.value", equalTo(100))
+                        .body("[0].requestRegions[0].pointOfInterest.travelMode", equalTo("CAR"))
+                        .body("[0].requestRegions[0].pointOfInterest.budgetType", equalTo("DISTANCE")));
+    }
+
+    @BeforeAll
+    void setup() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+    }
 }
