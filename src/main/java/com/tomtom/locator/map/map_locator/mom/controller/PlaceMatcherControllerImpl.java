@@ -2,18 +2,21 @@ package com.tomtom.locator.map.map_locator.mom.controller;
 
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
+import com.tomtom.locator.map.map_locator.model.MatchingRequest;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.mom.dto.LocationMatchDTO;
-import com.tomtom.locator.map.map_locator.mom.dto.PointOfInterestDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.StatDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.StatsPolygonDTO;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.LocationMatchMapper;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
-import com.tomtom.locator.map.map_locator.mom.service.ai.LlmService;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.StatMapper;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.StatsPolygonMapper;
+import com.tomtom.locator.map.map_locator.mom.service.ai.LlmService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.LocationMatchService;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.PlaceMatcherService;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.ConvexHullSmoother;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.EnvelopeSmoother;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.NonSmoothingSmoother;
 import com.tomtom.locator.map.map_locator.mom.service.tiles.MortonTileMatcherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +48,19 @@ public class PlaceMatcherControllerImpl implements PlaceMatcherController {
     private final StatsPolygonMapper statsPolygonMapper;
     private final StatMapper statMapper;
 
+    private final ConvexHullSmoother convexHullSmoother;
+    private final EnvelopeSmoother envelopeSmoother;
+    private final NonSmoothingSmoother nonSmoothingSmoother;
+
     @Override
     @PostMapping(path = "/matchLocation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public List<LocationMatchDTO> matchLocations(@RequestBody List<PointOfInterestDTO> pois, Authentication authentication) {
-        List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(pois));
+    public List<LocationMatchDTO> matchLocations(@RequestBody MatchingRequest request, Authentication authentication) {
+        switch (request.matchingSmootherType()) {
+            case NONE -> placeMatcherService.setMatchingSmoother(nonSmoothingSmoother);
+            case CONVEX_HULL -> placeMatcherService.setMatchingSmoother(convexHullSmoother);
+            case ENVELOPE -> placeMatcherService.setMatchingSmoother(envelopeSmoother);
+        }
+        List<LocationMatch> regionForPlaces = placeMatcherService.findRegionForPlaces(pointOfInterestMapper.toModel(request.pois()));
         regionForPlaces = regionForPlaces.stream().map(match -> {
             match.setName(llmService.getNameForPoiNames(match.getRequestRegions().keySet().stream().map(PointOfInterest::getName).toList()));
             return match;
