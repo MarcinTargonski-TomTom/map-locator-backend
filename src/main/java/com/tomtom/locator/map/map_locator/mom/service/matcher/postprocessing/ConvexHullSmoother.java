@@ -2,11 +2,11 @@ package com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing;
 
 import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.mom.service.matcher.converter.PolygonConverter;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConvexHullSmoother implements RegionSmoother {
     private final PolygonConverter polygonConverter;
 
