@@ -2,57 +2,38 @@ package com.tomtom.locator.map.map_locator.mom.service.matcher;
 
 import com.tomtom.locator.map.map_locator.exception.AnyCoordinatesGivenException;
 import com.tomtom.locator.map.map_locator.exception.EmptyListException;
-import com.tomtom.locator.map.map_locator.exception.UnsupportedGeometryTypeException;
 import com.tomtom.locator.map.map_locator.logger.MethodCallLogged;
 import com.tomtom.locator.map.map_locator.model.LocationMatch;
-import com.tomtom.locator.map.map_locator.model.Point;
 import com.tomtom.locator.map.map_locator.model.PointOfInterest;
 import com.tomtom.locator.map.map_locator.model.Region;
 import com.tomtom.locator.map.map_locator.model.SearchApiResponse;
-import com.tomtom.locator.map.map_locator.model.SearchApiResult;
 import com.tomtom.locator.map.map_locator.mom.dto.mapper.PointOfInterestMapper;
-import com.tomtom.locator.map.map_locator.mom.repository.LocationMatchRepository;
 import com.tomtom.locator.map.map_locator.mom.service.map.MapService;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.converter.PolygonConverter;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.NonSmoothingSmoother;
+import com.tomtom.locator.map.map_locator.mom.service.matcher.postprocessing.RegionSmoother;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Coordinate;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @MethodCallLogged
 public class PlaceMatcherServiceImpl implements PlaceMatcherService {
 
+    private final ThreadLocal<RegionSmoother> regionSmoother = ThreadLocal.withInitial(NonSmoothingSmoother::new);
     private final MapService mapService;
-    private final LocationMatchRepository locationMatchRepository;
     private final PointOfInterestMapper pointOfInterestMapper;
-
-    @Override
-    public List<Region> getPlacesMatchingQuery(PointOfInterest poi) {
-        SearchApiResponse response = mapService.getPlacesMatchingQuery(poi);
-        if (response == null || response.getResults() == null) {
-            return new ArrayList<>();
-        }
-        List<Region> regions = new ArrayList<>();
-        for (SearchApiResult result : response.getResults()) {
-            PointOfInterest resultPoi = pointOfInterestMapper.fromSearchApiResult(result, poi);
-            Region region = mapService.getRegionForPoint(resultPoi).getReachableRange();
-            regions.add(region);
-        }
-        return regions;
-    }
+    private final PolygonConverter polygonConverter;
 
     @Override
     public List<LocationMatch> findRegionForPlaces(List<PointOfInterest> pois) {
@@ -66,8 +47,8 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         Map<PointOfInterest, Region> requestRegionsByCoordinates = poisWithCoordinates.stream()
                 .collect(Collectors.toMap(
                         poi -> poi,
-                        poi -> mapService.getRegionForPoint(poi).getReachableRange()
-                ));
+                        poi -> regionSmoother.get().smoothRegion(mapService.getRegionForPoint(poi).getReachableRange()))
+                );
 
         if (requestRegionsByCoordinates.isEmpty()) {
             throw new AnyCoordinatesGivenException();
@@ -79,51 +60,63 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
         List<LocationMatch> allMatches = new ArrayList<>();
         for (Region baseOverlappingRegion : baseOverlappingRegions) {
 
-            if (poisByName.isEmpty()) {
-                LocationMatch baseMatch = new LocationMatch(requestRegionsByCoordinates, baseOverlappingRegion);
-                allMatches.add(baseMatch);
-                continue;
-            }
+            try {
 
-            for (PointOfInterest poiByName : poisByName) {
-                PointOfInterest searchPoi = new PointOfInterest(
-                        baseOverlappingRegion.getCenter(),
-                        poiByName.getBudgetType(),
-                        poiByName.getValue(),
-                        poiByName.getTravelMode(),
-                        poiByName.getName()
-                );
-
-                SearchApiResponse searchResponse = mapService.getPlacesMatchingQuery(searchPoi);
-                if (searchResponse == null || searchResponse.getResults() == null) {
+                if (poisByName.isEmpty()) {
+                    LocationMatch baseMatch = new LocationMatch(requestRegionsByCoordinates, baseOverlappingRegion);
+                    allMatches.add(baseMatch);
                     continue;
                 }
 
-                searchResponse.getResults().forEach(searchResult -> {
-                    PointOfInterest foundPoi = pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName);
+                for (PointOfInterest poiByName : poisByName) {
+                    PointOfInterest searchPoi = new PointOfInterest(
+                            baseOverlappingRegion.getCenter(),
+                            poiByName.getBudgetType(),
+                            poiByName.getValue(),
+                            poiByName.getTravelMode(),
+                            poiByName.getName()
+                    );
 
-                    Region foundRegion = mapService.getRegionForPoint(foundPoi).getReachableRange();
+                    SearchApiResponse searchResponse = mapService.getPlacesMatchingQuery(searchPoi);
+                    if (searchResponse == null || searchResponse.getResults() == null) {
+                        continue;
+                    }
 
-                    Map<PointOfInterest, Region> newRequestRegions = new HashMap<>(requestRegionsByCoordinates);
-                    newRequestRegions.put(foundPoi, foundRegion);
+                    searchResponse.getResults().forEach(searchResult -> {
+                        PointOfInterest foundPoi = pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName);
 
-                    List<Region> regionsForIntersection = new ArrayList<>(requestRegionsByCoordinates.values());
-                    regionsForIntersection.add(foundRegion);
+                        Region foundRegion = regionSmoother.get().smoothRegion(mapService.getRegionForPoint(foundPoi).getReachableRange());
 
-                    List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
+                        Map<PointOfInterest, Region> newRequestRegions = new HashMap<>(requestRegionsByCoordinates);
+                        newRequestRegions.put(foundPoi, foundRegion);
 
-                    newOverlappingRegions.forEach(newOverlappingRegion -> {
-                        LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
-                        allMatches.add(locationMatch);
+                        List<Region> regionsForIntersection = new ArrayList<>(requestRegionsByCoordinates.values());
+                        regionsForIntersection.add(foundRegion);
+
+                        List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
+
+                        newOverlappingRegions.forEach(newOverlappingRegion -> {
+                            LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
+                            allMatches.add(locationMatch);
+                        });
                     });
-                });
+
+
+                }
+            } catch (Exception e) {
+                log.error("Unexpected exception while matching places: {}", e.getMessage(), e);
             }
         }
 
         return allMatches.stream().filter(match -> match.getResponseRegion().getCenter() != null).sorted(
-                (match1, match2) -> (int) (convertRegionToJTSPolygon(match1.getResponseRegion()).getArea() -
-                        convertRegionToJTSPolygon(match2.getResponseRegion()).getArea())
+                (match1, match2) -> (int) (polygonConverter.toPolygon(match1.getResponseRegion()).getArea() -
+                        polygonConverter.toPolygon(match2.getResponseRegion()).getArea())
         ).toList();
+    }
+
+    @Override
+    public void setMatchingSmoother(RegionSmoother regionSmoother) {
+        this.regionSmoother.set(regionSmoother);
     }
 
     List<Region> getOverlappingRegions(List<Region> regions) {
@@ -131,64 +124,13 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
             throw new EmptyListException();
         }
 
-        Geometry actualPolygon = convertRegionToJTSPolygon(regions.getFirst());
+        Geometry actualPolygon = polygonConverter.toPolygon(regions.getFirst());
 
         for (int i = 1; i < regions.size(); i++) {
-            Polygon polygon = convertRegionToJTSPolygon(regions.get(i));
+            Polygon polygon = polygonConverter.toPolygon(regions.get(i));
             actualPolygon = actualPolygon.intersection(polygon);
         }
 
-        return switch (actualPolygon) {
-            case Polygon polygon -> List.of(convertPolygonToRegion(polygon));
-            case MultiPolygon multiPolygon -> convertGeometryCollectionToRegion(multiPolygon);
-            case GeometryCollection geometryCollection -> convertGeometryCollectionToRegion(geometryCollection);
-            default -> throw new UnsupportedGeometryTypeException(actualPolygon.getGeometryType());
-        };
+        return polygonConverter.toRegion(actualPolygon);
     }
-
-
-    private Polygon convertRegionToJTSPolygon(Region region) {
-        GeometryFactory geometryFactory = new GeometryFactory();
-
-        List<Coordinate> uniqueCoordinates = region.getBoundary().stream()
-                .map(point -> new Coordinate(point.getLatitude(), point.getLongitude()))
-                .distinct()
-                .toList();
-        Coordinate[] coordinates = uniqueCoordinates.toArray(new Coordinate[0]);
-
-        if (!coordinates[0].equals(coordinates[coordinates.length - 1])) {
-            coordinates = Arrays.copyOf(coordinates, coordinates.length + 1);
-            coordinates[coordinates.length - 1] = coordinates[0];
-        }
-
-        LinearRing shell = geometryFactory.createLinearRing(coordinates);
-        return geometryFactory.createPolygon(shell, null);
-    }
-
-
-    private Region convertPolygonToRegion(Polygon polygon) {
-        Region region = new Region(null, new ArrayList<>());
-        Coordinate[] coordinates = polygon.getCoordinates();
-
-        Arrays.stream(coordinates).forEach(coordinate ->
-                region.getBoundary().add(new Point(coordinate.x, coordinate.y))
-        );
-
-        if (polygon.getCentroid().getCoordinate() != null) {
-            region.setCenter(new Point(polygon.getCentroid().getCoordinate().x, polygon.getCentroid().getCoordinate().y));
-        }
-
-        return region;
-    }
-
-    private List<Region> convertGeometryCollectionToRegion(GeometryCollection multiPolygon) {
-        List<Region> overlappingRegions = new ArrayList<>();
-        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-            if (multiPolygon.getGeometryN(i) instanceof Polygon poly) {
-                overlappingRegions.add(convertPolygonToRegion(poly));
-            }
-        }
-        return overlappingRegions;
-    }
-
 }
