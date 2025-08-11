@@ -101,7 +101,7 @@ public enum BudgetType {
 
 ```java
 public enum TravelMode {
-    CAR, PEDESTRIAN, BUS
+    CAR, BUS
 }
 ```
 
