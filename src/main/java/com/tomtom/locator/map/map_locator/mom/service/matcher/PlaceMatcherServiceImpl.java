@@ -68,6 +68,8 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                     continue;
                 }
 
+                Map<PointOfInterest, List<PointOfInterest>> foundPoisByQuery = new HashMap<>();
+
                 for (PointOfInterest poiByName : poisByName) {
                     PointOfInterest searchPoi = new PointOfInterest(
                             baseOverlappingRegion.getCenter(),
@@ -78,31 +80,36 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                     );
 
                     SearchApiResponse searchResponse = mapService.getPlacesMatchingQuery(searchPoi);
-                    if (searchResponse == null || searchResponse.getResults() == null) {
-                        continue;
+                    if (searchResponse != null && searchResponse.getResults() != null) {
+                        List<PointOfInterest> foundPois = searchResponse.getResults().stream()
+                                .map(searchResult -> pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName))
+                                .toList();
+                        foundPoisByQuery.put(poiByName, foundPois);
+                    } else {
+                        foundPoisByQuery.put(poiByName, new ArrayList<>());
+                    }
+                }
+
+                List<List<PointOfInterest>> combinations = generateCombinations(foundPoisByQuery, poisByName);
+
+                for (List<PointOfInterest> combination : combinations) {
+                    Map<PointOfInterest, Region> newRequestRegions = new HashMap<>(requestRegionsByCoordinates);
+                    List<Region> regionsForIntersection = new ArrayList<>(requestRegionsByCoordinates.values());
+
+                    for (PointOfInterest foundPoi : combination) {
+                        Region foundRegion = regionSmoother.get().smoothRegion(mapService.getRegionForPoint(foundPoi).getReachableRange());
+                        newRequestRegions.put(foundPoi, foundRegion);
+                        regionsForIntersection.add(foundRegion);
                     }
 
-                    searchResponse.getResults().forEach(searchResult -> {
-                        PointOfInterest foundPoi = pointOfInterestMapper.fromSearchApiResult(searchResult, poiByName);
+                    List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
 
-                        Region foundRegion = regionSmoother.get().smoothRegion(mapService.getRegionForPoint(foundPoi).getReachableRange());
-
-                        Map<PointOfInterest, Region> newRequestRegions = new HashMap<>(requestRegionsByCoordinates);
-                        newRequestRegions.put(foundPoi, foundRegion);
-
-                        List<Region> regionsForIntersection = new ArrayList<>(requestRegionsByCoordinates.values());
-                        regionsForIntersection.add(foundRegion);
-
-                        List<Region> newOverlappingRegions = getOverlappingRegions(regionsForIntersection);
-
-                        newOverlappingRegions.forEach(newOverlappingRegion -> {
-                            LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
-                            allMatches.add(locationMatch);
-                        });
+                    newOverlappingRegions.forEach(newOverlappingRegion -> {
+                        LocationMatch locationMatch = new LocationMatch(newRequestRegions, newOverlappingRegion);
+                        allMatches.add(locationMatch);
                     });
-
-
                 }
+
             } catch (Exception e) {
                 log.error("Unexpected exception while matching places: {}", e.getMessage(), e);
             }
@@ -112,6 +119,41 @@ public class PlaceMatcherServiceImpl implements PlaceMatcherService {
                 (match1, match2) -> (int) (polygonConverter.toPolygon(match1.getResponseRegion()).getArea() -
                         polygonConverter.toPolygon(match2.getResponseRegion()).getArea())
         ).toList();
+    }
+
+    private List<List<PointOfInterest>> generateCombinations(
+            Map<PointOfInterest, List<PointOfInterest>> foundPoisByQuery,
+            List<PointOfInterest> poisByName) {
+
+        List<List<PointOfInterest>> combinations = new ArrayList<>();
+        generateCombinationsRecursive(foundPoisByQuery, poisByName, 0, new ArrayList<>(), combinations);
+        return combinations;
+    }
+
+    private void generateCombinationsRecursive(
+            Map<PointOfInterest, List<PointOfInterest>> foundPoisByQuery,
+            List<PointOfInterest> poisByName,
+            int queryIndex,
+            List<PointOfInterest> currentCombination,
+            List<List<PointOfInterest>> allCombinations) {
+
+        if (queryIndex >= poisByName.size()) {
+            allCombinations.add(new ArrayList<>(currentCombination));
+            return;
+        }
+
+        PointOfInterest currentQuery = poisByName.get(queryIndex);
+        List<PointOfInterest> foundPois = foundPoisByQuery.get(currentQuery);
+
+        if (foundPois.isEmpty()) {
+            return;
+        }
+
+        for (PointOfInterest foundPoi : foundPois) {
+            currentCombination.add(foundPoi);
+            generateCombinationsRecursive(foundPoisByQuery, poisByName, queryIndex + 1, currentCombination, allCombinations);
+            currentCombination.remove(currentCombination.size() - 1);
+        }
     }
 
     @Override
